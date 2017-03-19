@@ -13,20 +13,23 @@ var config = {
   }
 };
 
+var log = [];
+
 var connection = new Connection(config);
 connection.on('connect', function(err) {
-  console.log(`connect: ${JSON.stringify(err, null, "  ")}`);
-  var port = process.env.port || 1337;
-  app.get('/', function (req, res) {
-    res.send("Hello, world!");
-  });
-  app.listen(port, function () {
-    console.log(`Listening on port ${port}`);
-  });
+  log.push(`connect: ${JSON.stringify(err, null, "  ")}`);
 });
 connection.on('errorMessage', function(err) {
-  console.log(`errorMessage: ${JSON.stringify(err, null, "  ")}`)
+  log.push(`errorMessage: ${JSON.stringify(err, null, "  ")}`)
 });
 connection.on('error', function(err) {
-  console.log(`error: ${JSON.stringify(err, null, "  ")}`);
+  log.push(`error: ${JSON.stringify(err, null, "  ")}`);
+});
+
+var port = process.env.port || 1337;
+app.get('/', function (req, res) {
+  res.send(JSON.stringify(log));
+});
+app.listen(port, function () {
+  console.log(`Listening on port ${port}`);
 });
