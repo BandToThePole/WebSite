@@ -26,7 +26,7 @@ connection.on('error', function(err) {
   log.push(`error: ${JSON.stringify(err, null, "  ")}`);
 });
 
-var port = process.env.port || 1337;
+var port = process.env.PORT || 1337;
 app.get('/', function (req, res) {
   res.send(JSON.stringify(log));
 });
