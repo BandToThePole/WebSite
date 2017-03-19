@@ -16,7 +16,7 @@ var config = {
 var connection = new Connection(config);
 connection.on('connect', function(err) {
   console.log(`connect: ${JSON.stringify(err, null, "  ")}`);
-  var port = process.env.PORT || 1337;
+  var port = process.env.port || 1337;
   app.get('/', function (req, res) {
     res.send("Hello, world!");
   });
