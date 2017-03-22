@@ -35,21 +35,46 @@ app.get('/', function (req, res) {
 var Request = require('tedious').Request;
 
 app.get('/api.json', function (req, res) {
-  var toReturn = [];
-  request = new Request("select * from sessions", function(err, rowCount) {
-    if (err) {
-      console.log(err);
+    var toReturn = {
+	'locations': [],
+	'heart_rates': [],
+	'calories': [],
     }
-    res.send(JSON.stringify(toReturn));
-  });
-
-  request.on('row', function (columns) {
-    columns.forEach(function (column) {
-      toReturn.push(column.value);
+    requestLocation = new Request("SELECT time,lat,long FROM Locations" , function(err, rowCount) {
+	if (err) {
+	    console.log(err);
+	}
+	connection.execSql(requestHeartRate)
     });
-  });
 
-  connection.execSql(request);
+    requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates" , function(err, rowCount) {
+	if (err) {
+	    console.log(err);
+	}
+	connection.execSql(requestCalories)
+    });
+
+    requestCalories = new Request("SELECT time,kcalcount FROM Calories" , function(err, rowCount) {
+	if (err) {
+	    console.log(err);
+	}
+	res.send(JSON.stringify(toReturn));
+    });
+    
+
+    requestLocation.on('row', function (columns) {
+	toReturn.locations.push({'time':columns[0].value,'lat':columns[1].value,'long':columns[2].value})
+    });
+
+    requestHeartRate.on('row', function (columns) {
+	toReturn.heart_rates.push({'time':columns[0].value,'bpm':columns[1].value})
+    });
+
+    requestCalories.on('row', function (columns) {
+	toReturn.calories.push({'time':columns[0].value,'kcalcount':columns[1].value})
+    });
+
+    connection.execSql(requestLocation);
 });
 
 app.listen(port, function () {
