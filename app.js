@@ -35,23 +35,21 @@ app.get('/', function (req, res) {
 var Request = require('tedious').Request;
 
 app.get('/api.json', function (req, res) {
-    var toReturn = [];
-    request = new Request("select * from sessions", function(err, rowCount) {
-	if (err) {
-        console.log(err);
-      } else {
-        console.log(rowCount + ' rows');
-      }
-    });
-
-    request.on('row', function(columns) {
-	columns.forEach(function(column) {
-	    toReturn.push(column.value);
-	});
-    });
-
-    connection.execSql(request);
+  var toReturn = [];
+  request = new Request("select * from sessions", function(err, rowCount) {
+    if (err) {
+      console.log(err);
+    }
     res.send(JSON.stringify(toReturn));
+  });
+
+  request.on('row', function (columns) {
+    columns.forEach(function (column) {
+      toReturn.push(column.value);
+    });
+  });
+
+  connection.execSql(request);
 });
 
 app.listen(port, function () {
