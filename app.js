@@ -33,6 +33,16 @@ app.get('/', function (req, res) {
 });
 
 var Request = require('tedious').Request;
+var TYPES = require('tedious').TYPES;
+
+function getQuery(query,defvalue){
+    if (typeof query == 'undefined'){
+	return defvalue
+    }
+    else {
+	return query
+    }
+};
 
 app.get('/api.json', function (req, res) {
     var toReturn = {
@@ -40,26 +50,43 @@ app.get('/api.json', function (req, res) {
 	'heart_rates': [],
 	'calories': [],
     }
-    requestLocation = new Request("SELECT time,lat,long FROM Locations" , function(err, rowCount) {
+
+    console.log(req.query.start)
+    
+    var startDate = getQuery(req.query.start,'0001-01-01T00:00:00.000Z');
+    var endDate = getQuery(req.query.end,'9999-12-31T23:59:59.999Z');
+
+    console.log(startDate)
+    console.log(endDate)
+    
+    requestLocation = new Request("SELECT time,lat,long FROM Locations WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
 	}
 	connection.execSql(requestHeartRate)
     });
 
-    requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates" , function(err, rowCount) {
+    requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
 	}
 	connection.execSql(requestCalories)
     });
 
-    requestCalories = new Request("SELECT time,kcalcount FROM Calories" , function(err, rowCount) {
+    requestCalories = new Request("SELECT time,kcalcount FROM Calories WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
 	}
 	res.send(JSON.stringify(toReturn));
     });
+
+    requestLocation.addParameter('start', TYPES.DateTime2, startDate);
+    requestLocation.addParameter('end', TYPES.DateTime2, endDate);
+    requestHeartRate.addParameter('start', TYPES.DateTime2, startDate);
+    requestHeartRate.addParameter('end', TYPES.DateTime2, endDate);
+    requestCalories.addParameter('start', TYPES.DateTime2, startDate);
+    requestCalories.addParameter('end', TYPES.DateTime2, endDate);
+    
     
 
     requestLocation.on('row', function (columns) {
