@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 
+
 var Connection = require('tedious').Connection;
 // Very important that the password never appears in git
 var config = {
@@ -30,6 +31,29 @@ var port = process.env.PORT || 1337;
 app.get('/', function (req, res) {
   res.send(JSON.stringify(log));
 });
+
+var Request = require('tedious').Request;
+
+app.get('/api.json', function (req, res) {
+    var toReturn = [];
+    request = new Request("select * from sessions", function(err, rowCount) {
+	if (err) {
+        console.log(err);
+      } else {
+        console.log(rowCount + ' rows');
+      }
+    });
+
+    request.on('row', function(columns) {
+	columns.forEach(function(column) {
+	    toReturn.push(column.value);
+	});
+    });
+
+    connection.execSql(request);
+    res.send(JSON.stringify(toReturn));
+});
+
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
