@@ -1,5 +1,10 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
+var util = require('util');
+const zlib = require('zlib');
+    
+app.use(bodyParser.raw({inflate:false,type:'*/*'}));
 
 
 var Connection = require('tedious').Connection;
@@ -103,6 +108,77 @@ app.get('/api.json', function (req, res) {
 
     connection.execSql(requestLocation);
 });
+
+app.post('/post', function(req,res) {
+    var sqlQuery = "" //sqlQuery to be built
+    var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
+    console.log(body)
+    request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err,rowCount) {
+	if(err) {
+	    console.log(err);
+	}
+	else {
+	    console.log(sqlQuery)
+	    writeRequest = new Request(sqlQuery, function(err,rowCount){
+		if(err) {
+		    console.log(err);
+		}
+		res.send("Data written");
+	    });
+	    connection.execSql(writeRequest);
+	}
+    }); //Get current maximum sessionid or 0 if there are no sessions
+
+    request.on('row', function(columns) {
+	var nextSessionID = columns[0].value
+	body.recording_sessions.forEach(function(session){
+	    console.log(session);
+	    nextSessionID += 1; //increment value to get new unique value
+	    var sqlQueryTemp = "" //improve slicing efficiency
+	    sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s');\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
+	    var startDate = new Date(session.start);
+
+	    //add locations if present
+	    if (session.locations.length > 0){
+		sqlQueryTemp = "INSERT INTO Locations VALUES " //LocationID is automatically filled
+		session.locations.forEach(function(location){
+		    var time = (new Date(startDate.getTime() + location.dt)).toISOString();
+		    sqlQueryTemp += util.format("(%d, %d, %d, '%s'),",nextSessionID,location.lat,location.long,time);
+		});
+		sqlQuery += sqlQueryTemp.slice(0,-1); //remove last comma
+		sqlQuery += ";\n"
+	    }
+
+	    //add HeartRates
+	    if (session.heart_rate.length > 0){
+		sqlQueryTemp = "INSERT INTO HeartRates VALUES " //HeartRateID is automatically filled
+		session.heart_rate.forEach(function(heart){
+		    var time = (new Date(startDate.getTime() + heart.dt)).toISOString();
+		    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,heart.bpm,time);
+		});
+		sqlQuery += sqlQueryTemp.slice(0,-1);
+		sqlQuery += ";\n"
+	    }
+
+	    //add Calories
+	    if (session.calories.length > 0) {
+		sqlQueryTemp = "INSERT INTO Calories VALUES " //CalorieID is automatically filled
+		session.calories.forEach(function(calorie){
+		    var time = (new Date(startDate.getTime() + calorie.dt)).toISOString();
+		    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,calorie.total_calories_since_start,time);
+		});
+		sqlQuery += sqlQueryTemp.slice(0,-1);
+		sqlQuery += ";\n"
+	    }
+
+	    //TODO: Add distance
+	}); 
+    });
+
+    connection.execSql(request);
+});
+
+
 
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
