@@ -3,6 +3,8 @@ var app = express();
 var bodyParser = require('body-parser');
 var util = require('util');
 const zlib = require('zlib');
+
+const MILLISEC_IN_SEC = 1000;
     
 app.use(bodyParser.raw({inflate:false,type:'*/*'}));
 
@@ -142,7 +144,7 @@ app.post('/post', function(req,res) {
 	    if (session.locations.length > 0){
 		sqlQueryTemp = "INSERT INTO Locations VALUES " //LocationID is automatically filled
 		session.locations.forEach(function(location){
-		    var time = (new Date(startDate.getTime() + location.dt)).toISOString();
+		    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*location.dt)).toISOString();
 		    sqlQueryTemp += util.format("(%d, %d, %d, '%s'),",nextSessionID,location.lat,location.long,time);
 		});
 		sqlQuery += sqlQueryTemp.slice(0,-1); //remove last comma
@@ -153,7 +155,7 @@ app.post('/post', function(req,res) {
 	    if (session.heart_rate.length > 0){
 		sqlQueryTemp = "INSERT INTO HeartRates VALUES " //HeartRateID is automatically filled
 		session.heart_rate.forEach(function(heart){
-		    var time = (new Date(startDate.getTime() + heart.dt)).toISOString();
+		    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*heart.dt)).toISOString();
 		    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,heart.bpm,time);
 		});
 		sqlQuery += sqlQueryTemp.slice(0,-1);
@@ -164,14 +166,23 @@ app.post('/post', function(req,res) {
 	    if (session.calories.length > 0) {
 		sqlQueryTemp = "INSERT INTO Calories VALUES " //CalorieID is automatically filled
 		session.calories.forEach(function(calorie){
-		    var time = (new Date(startDate.getTime() + calorie.dt)).toISOString();
+		    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*calorie.dt)).toISOString();
 		    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,calorie.total_calories_since_start,time);
 		});
 		sqlQuery += sqlQueryTemp.slice(0,-1);
 		sqlQuery += ";\n"
 	    }
 
-	    //TODO: Add distance
+	    //add Distances
+	    if (session.distances.length > 0) {
+		sqlQueryTemp = "INSERT INTO Distances VALUES " //DistanceID is automatically filled
+		session.distances.forEach(function(distance){
+		    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*distance.dt)).toISOString();
+		    sqlQueryTemp += util.format("(%d,%d,%d,%d,'%s','%s'),",nextSessionID,distance.distance,distance.speed,distance.pace,distance.motion,time);
+		});
+		sqlQuery += sqlQueryTemp.slice(0,-1);
+		sqlQuery += ";\n"
+	    }		
 	}); 
     });
 
