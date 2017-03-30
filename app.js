@@ -25,13 +25,13 @@ var log = [];
 
 var connection = new Connection(config);
 connection.on('connect', function(err) {
-  log.push(`connect: ${JSON.stringify(err, null, "  ")}`);
+    log.push(`connect: ` + (new Date).toISOString());
 });
 connection.on('errorMessage', function(err) {
-  log.push(`errorMessage: ${JSON.stringify(err, null, "  ")}`)
+    log.push(`errorMessage: ` + JSON.stringify(err) + ' ' + (new Date).toISOString());
 });
 connection.on('error', function(err) {
-  log.push(`error: ${JSON.stringify(err, null, "  ")}`);
+    log.push('error: ' + JSON.stringify(err) + ' ' + (new Data).toISOString());
 });
 
 var port = process.env.PORT || 1337;
