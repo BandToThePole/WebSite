@@ -56,6 +56,7 @@ app.get('/api.json', function (req, res) {
 	'locations': [],
 	'heart_rates': [],
 	'calories': [],
+	'distances': [],
     }
 
     console.log(req.query.start)
@@ -70,22 +71,30 @@ app.get('/api.json', function (req, res) {
 	if (err) {
 	    console.log(err);
 	}
-	connection.execSql(requestHeartRate)
+	connection.execSql(requestHeartRate);
     });
 
     requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
 	}
-	connection.execSql(requestCalories)
+	connection.execSql(requestCalories);
     });
 
     requestCalories = new Request("SELECT time,kcalcount FROM Calories WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
 	}
+	connection.execSql(requestDistances);
+    });
+
+    requestDistances = new Request("SELECT time, distance, speed, pace, motion FROM Distances WHERE time BETWEEN @start AND @end", function(err, rowCount) {
+	if (err) {
+	    console.log(err);
+	}
 	res.send(JSON.stringify(toReturn));
     });
+    
 
     requestLocation.addParameter('start', TYPES.DateTime2, startDate);
     requestLocation.addParameter('end', TYPES.DateTime2, endDate);
@@ -93,6 +102,8 @@ app.get('/api.json', function (req, res) {
     requestHeartRate.addParameter('end', TYPES.DateTime2, endDate);
     requestCalories.addParameter('start', TYPES.DateTime2, startDate);
     requestCalories.addParameter('end', TYPES.DateTime2, endDate);
+    requestDistances.addParameter('start', TYPES.DateTime2, startDate);
+    requestDistances.addParameter('end', TYPES.DateTime2, endDate);
     
     
 
@@ -106,6 +117,10 @@ app.get('/api.json', function (req, res) {
 
     requestCalories.on('row', function (columns) {
 	toReturn.calories.push({'time':columns[0].value,'kcalcount':columns[1].value})
+    });
+
+    requestDistances.on('row', function (columns) {
+	toReturn.distances.push({'time':columns[0].value, 'distance' : columns[1].value, 'speed' : columns[2].value, 'pace' : columns[3].value, 'motion' : columns[4].value})
     });
 
     connection.execSql(requestLocation);
