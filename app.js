@@ -7,7 +7,7 @@ const zlib = require('zlib');
 const MILLISEC_IN_SEC = 1000;
 
 // Ppassword for updating the database. This is for James Redden.
-const PASSWORD = 01234;
+const PASSWORD = '01234';
 
 app.use(bodyParser.raw({inflate:false,type:'*/*'}));
 
