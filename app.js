@@ -7,6 +7,10 @@ var basicAuth = require('basic-auth');
 
 const MILLISEC_IN_SEC = 1000;
 
+
+var Request = require('tedious').Request;
+var TYPES = require('tedious').TYPES;
+
 //Authenticator function
 var auth = function(req,res,next){
     function unauthorized(res) {
@@ -19,14 +23,20 @@ var auth = function(req,res,next){
     if (!user || !user.name || !user.pass) {
 	return unauthorized(res);
     };
+    //usernames and passwords are case sensitive
+    requestAuth = new Request("SELECT * FROM Users WHERE USERNAME = @name AND PASSWORD = @pass",function(err,rowcount){
+	if (!err && rowcount == 1) {
+	    req.userid = user.name;
+	    return next();
+	} else {
+	    return unauthorized(res);
+	}
+    });
 
-    
-    if (user.name === 'foo' && user.pass === 'bar') {
-	req.userid = user.name;
-	return next();
-    } else {
-	return unauthorized(res);
-    };
+    requestAuth.addParameter('name',TYPES.VarChar,user.name);
+    requestAuth.addParameter('pass',TYPES.VarChar,user.pass);
+
+    connection.execSql(requestAuth);
 };
 
 app.use(bodyParser.raw({inflate:false,type:'*/*'}));
@@ -62,8 +72,6 @@ app.get('/', function (req, res) {
   res.send(JSON.stringify(log));
 });
 
-var Request = require('tedious').Request;
-var TYPES = require('tedious').TYPES;
 
 function getQuery(query,defvalue){
     if (typeof query == 'undefined'){
