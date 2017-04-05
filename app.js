@@ -129,7 +129,7 @@ app.get('/api.json', function (req, res) {
     connection.execSql(requestLocation);
 });
 
-app.post('/:uid/post', function(req,res) {
+app.post('/post/:uid', function(req,res) {
     var uid = req.params.uid;
     if (uid != PASSWORD) {
       res.status(403).send("Illegal user ID");
