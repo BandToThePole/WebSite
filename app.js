@@ -26,6 +26,7 @@ var auth = function(req,res,next){
     //usernames and passwords are case sensitive
     requestAuth = new Request("SELECT * FROM Users WHERE USERNAME = @name AND PASSWORD = @pass",function(err,rowcount){
 	if (!err && rowcount == 1) {
+	    // pass username forward
 	    req.userid = user.name;
 	    return next();
 	} else {
@@ -161,7 +162,6 @@ app.post('/post', auth, function(req,res) {
     if(!req.secure){
 	//res.status(403).send("Connection not Secure: use https");
     }
-    console.log(req.userid)
 
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
@@ -188,7 +188,7 @@ app.post('/post', auth, function(req,res) {
 	    console.log(session);
 	    nextSessionID += 1; //increment value to get new unique value
 	    var sqlQueryTemp = "" //improve slicing efficiency
-	    sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s');\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
+	    sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
 	    var startDate = new Date(session.start);
 
 	    //add locations if present
@@ -237,6 +237,7 @@ app.post('/post', auth, function(req,res) {
 	});
     });
 
+    request.addParameter('name',TYPES.VarChar, req.userid);
     connection.execSql(request);
 });
 
