@@ -5,7 +5,10 @@ var util = require('util');
 const zlib = require('zlib');
 
 const MILLISEC_IN_SEC = 1000;
-    
+
+// Ppassword for updating the database. This is for James Redden.
+const PASSWORD = 01234;
+
 app.use(bodyParser.raw({inflate:false,type:'*/*'}));
 
 
@@ -60,13 +63,13 @@ app.get('/api.json', function (req, res) {
     }
 
     console.log(req.query.start)
-    
+
     var startDate = getQuery(req.query.start,'0001-01-01T00:00:00.000Z');
     var endDate = getQuery(req.query.end,'9999-12-31T23:59:59.999Z');
 
     console.log(startDate)
     console.log(endDate)
-    
+
     requestLocation = new Request("SELECT time,lat,long FROM Locations WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	if (err) {
 	    console.log(err);
@@ -94,7 +97,7 @@ app.get('/api.json', function (req, res) {
 	}
 	res.send(JSON.stringify(toReturn));
     });
-    
+
 
     requestLocation.addParameter('start', TYPES.DateTime2, startDate);
     requestLocation.addParameter('end', TYPES.DateTime2, endDate);
@@ -104,8 +107,8 @@ app.get('/api.json', function (req, res) {
     requestCalories.addParameter('end', TYPES.DateTime2, endDate);
     requestDistances.addParameter('start', TYPES.DateTime2, startDate);
     requestDistances.addParameter('end', TYPES.DateTime2, endDate);
-    
-    
+
+
 
     requestLocation.on('row', function (columns) {
 	toReturn.locations.push({'time':columns[0].value,'lat':columns[1].value,'long':columns[2].value})
@@ -126,7 +129,13 @@ app.get('/api.json', function (req, res) {
     connection.execSql(requestLocation);
 });
 
-app.post('/post', function(req,res) {
+app.post('/:uid/post', function(req,res) {
+    var uid = req.params.uid;
+    if (uid != PASSWORD) {
+      res.status(403).send("Illegal user ID");
+      return;
+    }
+
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
     console.log(body)
@@ -197,8 +206,8 @@ app.post('/post', function(req,res) {
 		});
 		sqlQuery += sqlQueryTemp.slice(0,-1);
 		sqlQuery += ";\n"
-	    }		
-	}); 
+	    }
+	});
     });
 
     connection.execSql(request);
