@@ -160,7 +160,7 @@ app.get('/api.json', function (req, res) {
 
 app.post('/post', auth, function(req,res) {
     if(!req.secure){
-	//res.status(403).send("Connection not Secure: use https");
+	res.status(403).send("Connection not Secure: use https");
     }
 
     var sqlQuery = "" //sqlQuery to be built
@@ -178,6 +178,7 @@ app.post('/post', auth, function(req,res) {
 		}
 		res.send("Data written");
 	    });
+	    writeRequest.addParameter('name',TYPES.VarChar, req.userid);
 	    connection.execSql(writeRequest);
 	}
     }); //Get current maximum sessionid or 0 if there are no sessions
@@ -237,7 +238,6 @@ app.post('/post', auth, function(req,res) {
 	});
     });
 
-    request.addParameter('name',TYPES.VarChar, req.userid);
     connection.execSql(request);
 });
 
