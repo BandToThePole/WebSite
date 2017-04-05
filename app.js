@@ -130,6 +130,10 @@ app.get('/api.json', function (req, res) {
 });
 
 app.post('/post/:uid', function(req,res) {
+    if(!req.secure){
+	res.status(403).send("Connection not Secure: use https");
+    }
+    
     var uid = req.params.uid;
     if (uid != PASSWORD) {
       res.status(403).send("Illegal user ID");
