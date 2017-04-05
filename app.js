@@ -3,11 +3,31 @@ var app = express();
 var bodyParser = require('body-parser');
 var util = require('util');
 const zlib = require('zlib');
+var basicAuth = require('basic-auth');
 
 const MILLISEC_IN_SEC = 1000;
 
-// Ppassword for updating the database. This is for James Redden.
-const PASSWORD = '01234';
+//Authenticator function
+var auth = function(req,res,next){
+    function unauthorized(res) {
+	res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+	return res.sendStatus(401);
+    };
+
+    var user = basicAuth(req);
+
+    if (!user || !user.name || !user.pass) {
+	return unauthorized(res);
+    };
+
+    
+    if (user.name === 'foo' && user.pass === 'bar') {
+	req.userid = user.name;
+	return next();
+    } else {
+	return unauthorized(res);
+    };
+};
 
 app.use(bodyParser.raw({inflate:false,type:'*/*'}));
 
@@ -129,16 +149,11 @@ app.get('/api.json', function (req, res) {
     connection.execSql(requestLocation);
 });
 
-app.post('/post/:uid', function(req,res) {
+app.post('/post', auth, function(req,res) {
     if(!req.secure){
-	res.status(403).send("Connection not Secure: use https");
+	//res.status(403).send("Connection not Secure: use https");
     }
-    
-    var uid = req.params.uid;
-    if (uid != PASSWORD) {
-      res.status(403).send("Illegal user ID");
-      return;
-    }
+    console.log(req.userid)
 
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
