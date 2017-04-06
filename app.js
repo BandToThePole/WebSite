@@ -159,10 +159,6 @@ app.get('/api.json', function (req, res) {
 });
 
 app.post('/post', auth, function(req,res) {
-    if(!req.secure){
-	res.status(403).send("Connection not Secure: use https");
-    }
-
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
     console.log(body)
