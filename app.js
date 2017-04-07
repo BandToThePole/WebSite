@@ -65,7 +65,7 @@ connection.on('errorMessage', function(err) {
     log.push(`errorMessage: ` + JSON.stringify(err) + ' ' + (new Date).toISOString());
 });
 connection.on('error', function(err) {
-    log.push('error: ' + JSON.stringify(err) + ' ' + (new Data).toISOString());
+    log.push('error: ' + JSON.stringify(err) + ' ' + (new Date).toISOString());
 });
 
 var port = process.env.PORT || 1337;
