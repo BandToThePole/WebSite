@@ -72,33 +72,33 @@ app.get('/api.json', function (req, res) {
     pool.acquire(function(err,connection){
 	if(err){
 	    log.push(err);
-	    return;
+	    res.sendStatus(500);
 	}
 
 	requestLocation = new Request("SELECT time,lat,long FROM Locations WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	    if (err) {
-		console.log(err);
+		log.push(err);
 	    }
 	    connection.execSql(requestHeartRate);
 	});
 
 	requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	    if (err) {
-		console.log(err);
+		log.push(err);
 	    }
 	    connection.execSql(requestCalories);
 	});
 
 	requestCalories = new Request("SELECT time,kcalcount FROM Calories WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
 	    if (err) {
-		console.log(err);
+		log.push(err);
 	    }
 	    connection.execSql(requestDistances);
 	});
 
 	requestDistances = new Request("SELECT time, distance, speed, pace, motion FROM Distances WHERE time BETWEEN @start AND @end", function(err, rowCount) {
 	    if (err) {
-		console.log(err);
+		log.push(err);
 	    }
 	    connection.release();
 	    res.send(JSON.stringify(toReturn));
@@ -152,7 +152,7 @@ var auth = function(req,res,next){
     pool.acquire(function(err,connection){
 	if(err){
 	    log.push(err);
-	    return;
+	    res.sendStatus(500);
 	}
 	//usernames and passwords are case sensitive
 	requestAuth = new Request("SELECT * FROM Users WHERE USERNAME = @name AND PASSWORD = @pass",function(err,rowcount){
@@ -180,21 +180,21 @@ app.post('/post', auth, function(req,res) {
     pool.acquire(function(err,connection){
 	if(err) {
 	    log.push(err);
-	    return;
+	    res.sendStatus(500);
 	}
 	
 	request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err,rowCount) {
 	    if(err) {
-		console.log(err);
+		log.push(err);
 	    }
 	    else {
 		console.log(sqlQuery)
 		writeRequest = new Request(sqlQuery, function(err,rowCount){
 		    if(err) {
-			console.log(err);
+			log.push(err);
 		    }
 		    connection.release();
-		    res.send("Data written");
+		    res.send("Data written\n");
 		});
 		writeRequest.addParameter('name',TYPES.VarChar, req.userid);
 		connection.execSql(writeRequest);
