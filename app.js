@@ -201,7 +201,7 @@ app.post('/post', auth, function(req,res) {
 	    log.push(err);
 	    res.sendStatus(500);
 	}
-	
+
 	request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err,rowCount) {
 	    if(err) {
 		log.push(err);
@@ -274,7 +274,7 @@ app.post('/post', auth, function(req,res) {
 		}
 	    });
 	});
-	
+
 
 	connection.execSql(request);
     });
