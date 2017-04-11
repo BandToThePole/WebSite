@@ -177,7 +177,7 @@ var auth = function(req,res,next){
 app.post('/view', auth, function(req, res) {
   var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
   res.send(JSON.stringify(body));
-}
+})
 
 app.post('/post', auth, function(req,res) {
     var sqlQuery = "" //sqlQuery to be built
