@@ -53,6 +53,17 @@ function getQuery(query,defvalue){
     }
 };
 
+function generateString(Columns,table,user){
+    if(typeof user == 'undefined'){
+	return "SELECT " + Columns + " FROM " + table + " WHERE time BETWEEN @start AND @end";
+    }
+    else {
+	return "SELECT " + Columns + " FROM " + table + " INNER JOIN Sessions ON " + table + ".Session = Sessions.SessionID WHERE time BETWEEN @start AND @end AND USERNAME=@user";
+    }
+}
+
+
+
 app.get('/api.json', function (req, res) {
     var toReturn = {
 	'locations': [],
@@ -61,13 +72,14 @@ app.get('/api.json', function (req, res) {
 	'distances': [],
     }
 
-    console.log(req.query.start)
-
     var startDate = getQuery(req.query.start,'0001-01-01T00:00:00.000Z');
     var endDate = getQuery(req.query.end,'9999-12-31T23:59:59.999Z');
 
-    console.log(startDate)
-    console.log(endDate)
+    console.log(startDate);
+    console.log(endDate);
+    console.log(req.query.user);
+
+    console.log(generateString("Time,Lat,Long", "Locations",req.query.user));
 
     pool.acquire(function(err,connection){
 	if(err){
@@ -75,28 +87,28 @@ app.get('/api.json', function (req, res) {
 	    res.sendStatus(500);
 	}
 
-	requestLocation = new Request("SELECT time,lat,long FROM Locations WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
+	requestLocation = new Request(generateString("Time,Lat,Long", "Locations",req.query.user) , function(err, rowCount) {
 	    if (err) {
 		log.push(err);
 	    }
 	    connection.execSql(requestHeartRate);
 	});
 
-	requestHeartRate = new Request("SELECT Time,bpm FROM HeartRates WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
+	requestHeartRate = new Request(generateString("Time,bpm","HeartRates",req.query.user) , function(err, rowCount) {
 	    if (err) {
 		log.push(err);
 	    }
 	    connection.execSql(requestCalories);
 	});
 
-	requestCalories = new Request("SELECT time,kcalcount FROM Calories WHERE time BETWEEN @start AND @end" , function(err, rowCount) {
+	requestCalories = new Request(generateString("Time,kcalcount","Calories",req.query.user) , function(err, rowCount) {
 	    if (err) {
 		log.push(err);
 	    }
 	    connection.execSql(requestDistances);
 	});
 
-	requestDistances = new Request("SELECT time, distance, speed, pace, motion FROM Distances WHERE time BETWEEN @start AND @end", function(err, rowCount) {
+	requestDistances = new Request(generateString("Time, distance, speed, pace, motion","Distances",req.query.user), function(err, rowCount) {
 	    if (err) {
 		log.push(err);
 	    }
@@ -113,6 +125,13 @@ app.get('/api.json', function (req, res) {
 	requestCalories.addParameter('end', TYPES.DateTime2, endDate);
 	requestDistances.addParameter('start', TYPES.DateTime2, startDate);
 	requestDistances.addParameter('end', TYPES.DateTime2, endDate);
+
+	if(typeof req.query.user != 'undefined') {
+	    requestLocation.addParameter('user', TYPES.VarChar, req.query.user);
+	    requestHeartRate.addParameter('user', TYPES.VarChar, req.query.user);
+	    requestCalories.addParameter('user', TYPES.VarChar, req.query.user);
+	    requestDistances.addParameter('user', TYPES.VarChar, req.query.user);
+	}
 
 
 
