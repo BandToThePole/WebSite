@@ -60,7 +60,7 @@ app.get('/api.json', function (req, res) {
 	'calories': [],
 	'distances': [],
     }
-    
+
     console.log(req.query.start)
 
     var startDate = getQuery(req.query.start,'0001-01-01T00:00:00.000Z');
@@ -173,6 +173,11 @@ var auth = function(req,res,next){
     });
 };
 
+app.post('/view', auth, function(req, res)) {
+  var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
+  res.send(JSON.stringify(body));
+}
+
 app.post('/post', auth, function(req,res) {
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
@@ -182,7 +187,7 @@ app.post('/post', auth, function(req,res) {
 	    log.push(err);
 	    res.sendStatus(500);
 	}
-	
+
 	request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err,rowCount) {
 	    if(err) {
 		log.push(err);
@@ -255,7 +260,7 @@ app.post('/post', auth, function(req,res) {
 		}
 	    });
 	});
-	
+
 
 	connection.execSql(request);
     });
