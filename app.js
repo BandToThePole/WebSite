@@ -204,6 +204,7 @@ app.post('/post', auth, function(req,res) {
 	request.on('row', function(columns) {
 	    var nextSessionID = columns[0].value
 	    body.recording_sessions.forEach(function(session){
+      console.log(`Session ${nextSessionID + 1}: `);
 		console.log(session);
 		nextSessionID += 1; //increment value to get new unique value
 		var sqlQueryTemp = "" //improve slicing efficiency
