@@ -221,10 +221,27 @@ app.post('/post', auth, function(req,res) {
 	}); //Get current maximum sessionid or 0 if there are no sessions
 
 	request.on('row', function(columns) {
-	    var nextSessionID = columns[0].value
-	    body.recording_sessions.forEach(function(session){
-      console.log(`Session ${nextSessionID + 1}: `);
+	  var nextSessionID = columns[0].value
+	  body.recording_sessions.forEach(function(session){
+    console.log(`Session ${nextSessionID + 1}: `);
 		console.log(session);
+
+    requestDuplicate = new Request("SELECT * FROM Sessions S", function(err, rowCount) {
+      if (err) {
+        log.push(err);
+      }
+      else if (rowCount != 0) {
+        console.log('Duplicates Found');
+      }
+      else {
+        console.log('Nothing');
+      }
+    });
+
+    requestDuplicate.addParameter('start', TYPES.DateTime2, session.start);
+    console.log(`Now executing ${nextSessionID + 1}`);
+    connection.execSql(requestDuplicate);
+
 		nextSessionID += 1; //increment value to get new unique value
 		var sqlQueryTemp = "" //improve slicing efficiency
 		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
