@@ -222,16 +222,20 @@ app.post('/post', auth, function(req,res) {
 
 	request.on('row', function(columns) {
 	  var nextSessionID = columns[0].value
+    var duplicateFound = false; // Indicates if a duplicate is found.
 	  body.recording_sessions.forEach(function(session){
     console.log(`Session ${nextSessionID + 1}: `);
 		console.log(session);
 
-    requestDuplicate = new Request("SELECT * FROM Sessions S", function(err, rowCount) {
+    duplicateFound = false; // Reset duplicateFound to false at the beginning of each iteration/session
+
+    requestDuplicate = new Request("SELECT * FROM Sessions WHERE startTime = @start", function(err, rowCount) {
       if (err) {
         log.push(err);
       }
       else if (rowCount != 0) {
         console.log('Duplicates Found');
+        duplicateFound = true;
       }
       else {
         console.log('Nothing');
@@ -241,6 +245,10 @@ app.post('/post', auth, function(req,res) {
     requestDuplicate.addParameter('start', TYPES.DateTime2, session.start);
     console.log(`Now executing ${nextSessionID + 1}`);
     connection.execSql(requestDuplicate);
+
+    if (duplicateFound) {
+      return; // Skip to the next session
+    }
 
 		nextSessionID += 1; //increment value to get new unique value
 		var sqlQueryTemp = "" //improve slicing efficiency
