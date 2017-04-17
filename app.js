@@ -222,10 +222,10 @@ app.post('/post', auth, function(req,res) {
 
 	request.on('row', function(columns) {
 	  var nextSessionID = columns[0].value
-    var duplicateFound = false; // Indicates if a duplicate is found.
+    var duplicateFound = false; // Indicates whether a duplicate is found.
 	  body.recording_sessions.forEach(function(session){
     console.log(`Session ${nextSessionID + 1}: `);
-		console.log(session);
+    console.log(session);
 
     duplicateFound = false; // Reset duplicateFound to false at the beginning of each iteration/session
 
