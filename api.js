@@ -82,8 +82,10 @@ function getData(req, res) {
                 // TODO: Better error handling
                 //log.push(err);
             }
-            connection.release();
-            res.send(toReturn);
+            else {
+                connection.release();
+                res.send(toReturn);
+            }
         });
 
 
