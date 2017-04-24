@@ -11,7 +11,7 @@ function log(req, res) {
 }
 
 function data(req, res) {
-    res.render('data');
+    res.render('data', { activeData: true });
 }
 
 exports.home = home;
