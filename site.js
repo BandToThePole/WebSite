@@ -3,15 +3,16 @@ function home(req, res) {
 }
 
 function team(req, res) {
-    res.render('team', { activeTeam: true });
+    res.render('team', { title: "Team", activeTeam: true });
 }
 
 function log(req, res) {
-    res.render('log');
+    res.render('log', { title: "Log" });
 }
 
 function data(req, res) {
-    res.render('data', { activeData: true });
+    res.render('data', { title: "Data", activeData: true });
+}
 }
 
 exports.home = home;
