@@ -37,9 +37,9 @@ pool.on('error',function(err){
     log.push(err);
 });
 
-var port = process.env.PORT || 1337;
-app.get('/', function (req, res) {
-    res.send(JSON.stringify(log));
+
+app.get('/api/log', function (req, res) {
+    res.send(log);
 });
 
 function getQuery(query,defvalue) {
@@ -308,8 +308,10 @@ app.post('/post', auth, function(req,res) {
     });
 });
 
+// For all the static resources
+app.use(express.static("static/"));
 
-
+var port = process.env.PORT || 1337;
 app.listen(port, function () {
     console.log(`Listening on port ${port}`);
 });
