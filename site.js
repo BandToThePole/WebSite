@@ -10,6 +10,11 @@ function log(req, res) {
     res.render('log');
 }
 
+function data(req, res) {
+    res.render('data');
+}
+
 exports.home = home;
 exports.team = team;
 exports.log = log;
+exports.data = data;

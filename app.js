@@ -18,6 +18,7 @@ app.set('view engine', 'handlebars');
 // Add new dynamic page paths here
 app.get('/team', site.team);
 app.get('/log', site.log);
+app.get('/data', site.data);
 app.get('/', site.home);
 
 // Add new API paths here
