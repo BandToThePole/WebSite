@@ -1,9 +1,9 @@
-function createGraph(container, title, xAxis, yAxis) {
+// Returns a canvas
+function createChart(container, title) {
     var div = document.createElement('div');
     div.classList.add('graph-container');
     var header = document.createElement('h2');
     header.textContent = title;
-    header.style.textAlign = 'center';
     div.appendChild(header);
     container.appendChild(div);
 
@@ -11,6 +11,12 @@ function createGraph(container, title, xAxis, yAxis) {
     canvas.width = 400;
     canvas.height = 300;
     div.appendChild(canvas);
+
+    return canvas;
+}
+
+function createScatterChart(container, title, xAxis, yAxis) {
+    var canvas = createChart(container, title);
 
     var xyData = [];
     for (var i = 0; i < Math.min(xAxis.length, yAxis.length); i++) {
@@ -68,6 +74,32 @@ function createGraph(container, title, xAxis, yAxis) {
     });
 }
 
+function createBarChart(container, title, labels, values) {
+    var canvas = createChart(container, title);
+    var chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            label: "Calories",
+            labels: labels,
+            datasets: [{
+                data: values
+            }]
+        },
+        options: {
+            legend: {
+                display: false,
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
 function addHeartRateData(container, data) {
     var heartRateValues = [], heartRateTimes = [];
     for (var i = 0; i < data["heart_rates"].length; i++) {
@@ -75,13 +107,40 @@ function addHeartRateData(container, data) {
         heartRateValues.push(datum.bpm);
         heartRateTimes.push(new Date(datum.time).getTime());
     }
-    createGraph(container, "Heart Rate", heartRateTimes, heartRateValues);
+    createScatterChart(container, "Heart Rate", heartRateTimes, heartRateValues);
+}
+
+function addCalorieData(container, data) {
+    var dates = [], values = [];
+    for (var i = 0; i < data["calories"].length; i++) {
+        var datum = data["calories"][i];
+        dates.push(new Date(datum.time));
+        values.push(datum.kcalcount);
+    }
+    var dateValues = totalPerDay(dates, values);
+    var labels = [], values = [];
+    for (var i = 0; i < dateValues.length; i++) {
+        labels.push(shortDate(dateValues[i].date));
+        values.push(dateValues[i].value);
+    }
+    createBarChart(container, "Calories", labels, values);
+}
+
+function addDistanceData(container, data) {
+    var dates = data["distances"].map(function(datum) { return new Date(datum.time) });
+    var values = data["distances"].map(function(datum) { return datum.distance });
+    var dateValues = totalPerDay(dates, values);
+    var labels = dateValues.map(function(datum) { return shortDate(datum.date) });
+    values = dateValues.map(function(datum) { return datum.value });
+    createBarChart(container, "Distances", labels, values);
 }
 
 function showGraphs(data) {
     var container = document.getElementById("graphs-container");
     empty(container);
     addHeartRateData(container, data);
+    addCalorieData(container, data);
+    addDistanceData(container, data);
 }
 
 function refresh() {

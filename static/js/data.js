@@ -28,8 +28,7 @@ function refresh() {
                 }
             }
 
-            var sortedColumnNames = Array.from(columnNames.values());
-            sortedColumnNames.sort();
+            var sortedColumnNames = sortedSetValues(columnNames);
 
             var table = document.createElement('table');
             table.classList.add('table'); // For Bootstrap

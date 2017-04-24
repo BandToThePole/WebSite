@@ -35,7 +35,7 @@ footer {
 
 .graph-container canvas {
     border: 1px solid black;
-    max-width: 50%; /* TODO: Adapt for mobile */
+    /*max-width: 50%; /* TODO: Adapt for mobile */
     margin: auto;
     display: block;
 }
