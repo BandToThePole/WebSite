@@ -10,7 +10,7 @@ app.use(bodyParser.raw({ inflate:false, type:'*/*' }));
 // Add new API paths here
 app.get('/api/log', api.getLog);
 app.get('/api/data', api.getData);
-app.post('/api/data', auth, api.postData);
+app.post('/api/data', api.auth, api.postData);
 
 // For all the static resources
 app.use(express.static("static/"));
