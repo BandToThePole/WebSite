@@ -1,9 +1,9 @@
 function home(req, res) {
-    res.render('home');
+    res.render('home', { activeHome: true });
 }
 
 function team(req, res) {
-    res.render('team');
+    res.render('team', { activeTeam: true });
 }
 
 exports.home = home;
