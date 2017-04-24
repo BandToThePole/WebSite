@@ -13,9 +13,13 @@ function log(req, res) {
 function data(req, res) {
     res.render('data', { title: "Data", activeData: true });
 }
+
+function graphs(req, res) {
+    res.render('graphs', { title: "Graphs", activeGraphs: true });
 }
 
 exports.home = home;
 exports.team = team;
 exports.log = log;
 exports.data = data;
+exports.graphs = graphs;

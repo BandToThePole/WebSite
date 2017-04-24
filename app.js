@@ -19,6 +19,7 @@ app.set('view engine', 'handlebars');
 app.get('/team', site.team);
 app.get('/log', site.log);
 app.get('/data', site.data);
+app.get('/graphs', site.graphs);
 app.get('/', site.home);
 
 // Add new API paths here

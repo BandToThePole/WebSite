@@ -24,5 +24,18 @@ textarea {
 }
 
 footer {
+    margin-top: 2em;
     text-align: center;
+}
+
+.graph-container {
+    text-align: center;
+    margin: auto;
+}
+
+.graph-container canvas {
+    border: 1px solid black;
+    max-width: 50%; /* TODO: Adapt for mobile */
+    margin: auto;
+    display: block;
 }
