@@ -180,10 +180,10 @@ function postData(req, res) {
                 // log.push(err);
             }
             else {
-                //console.log(sqlQuery)
+                console.log(sqlQuery)
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
                     if (err) {
-                        // log.push(err);
+                        console.log(err);
                     }
                     connection.release();
                     res.send("Data written\n");
@@ -195,69 +195,66 @@ function postData(req, res) {
 
         request.on('row', function(columns) {
             var nextSessionID = columns[0].value
-            var duplicateFound = false; // Indicates whether a duplicate is found.
             body.recording_sessions.forEach(function(session) {
                 //console.log(`Session ${nextSessionID + 1}: `);
                 //console.log(session);
 
-                requestDuplicate.addParameter('start', TYPES.DateTime2, session.start);
-                //console.log(`Now executing ${nextSessionID + 1}`);
-                connection.execSql(requestDuplicate);
-
                 nextSessionID += 1; //increment value to get new unique value
                 var sqlQueryTemp = "" //improve slicing efficiency
-                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE StartTime = '%s') INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",session.start,nextSessionID,session.start,session.end,"!!What Goes Here!!");
+                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE StartTime = '%s')\nBEGIN\n", session.start);
+		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
                 var startDate = new Date(session.start);
 
                 const MILLISEC_IN_SEC = 1000;
 
                 //add locations if present
                 if (session.locations.length > 0){
-                    sqlQueryTemp = util.format("IF NOT EXISTS(SELECT * FROM Sessions s JOIN Locations l ON s.SessionID = l.session WHERE StartTime = '%s') ", session.start);
                     sqlQueryTemp += "INSERT INTO Locations VALUES " //LocationID is automatically filled
                     session.locations.forEach(function(location){
-                    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*location.dt)).toISOString();
-                    sqlQueryTemp += util.format("(%d, %d, %d, '%s'),",nextSessionID,location.lat,location.long,time);
+			var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*location.dt)).toISOString();
+			sqlQueryTemp += util.format("(%d, %d, %d, '%s'),",nextSessionID,location.lat,location.long,time);
                     });
                     sqlQuery += sqlQueryTemp.slice(0,-1); //remove last comma
+		    sqlQueryTemp = "";
                     sqlQuery += ";\n"
                 }
 
                 //add HeartRates
                 if (session.heart_rate.length > 0){
-                    sqlQueryTemp = util.format("IF NOT EXISTS(SELECT * FROM Sessions s JOIN HeartRates h ON s.SessionID = h.Session WHERE StartTime = '%s') ", session.start);
                     sqlQueryTemp += "INSERT INTO HeartRates VALUES " //HeartRateID is automatically filled
                     session.heart_rate.forEach(function(heart){
-                    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*heart.dt)).toISOString();
-                    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,heart.bpm,time);
+			var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*heart.dt)).toISOString();
+			sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,heart.bpm,time);
                     });
                     sqlQuery += sqlQueryTemp.slice(0,-1);
+		    sqlQueryTemp = "";
                     sqlQuery += ";\n"
                 }
 
                 //add Calories
                 if (session.calories.length > 0) {
-                    sqlQueryTemp = util.format("IF NOT EXISTS(SELECT * FROM Sessions s JOIN Calories c ON s.SessionID = c.Session WHERE StartTime = '%s') ", session.start);
                     sqlQueryTemp += "INSERT INTO Calories VALUES " //CalorieID is automatically filled
                     session.calories.forEach(function(calorie){
-                    var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*calorie.dt)).toISOString();
-                    sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,calorie.total_calories_since_start,time);
+			var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*calorie.dt)).toISOString();
+			sqlQueryTemp += util.format("(%d,%d,'%s'),",nextSessionID,calorie.total_calories_since_start,time);
                     });
                     sqlQuery += sqlQueryTemp.slice(0,-1);
+		    sqlQueryTemp = "";
                     sqlQuery += ";\n"
                 }
 
                 //add Distances
                 if (session.distances.length > 0) {
-                    sqlQueryTemp = util.format("IF NOT EXISTS(SELECT * FROM Sessions s JOIN Distances d ON s.SessionID = d.Session WHERE StartTime = '%s') ", session.start);
                     sqlQueryTemp += "INSERT INTO Distances VALUES " //DistanceID is automatically filled
                     session.distances.forEach(function(distance){
                         var time = (new Date(startDate.getTime() + MILLISEC_IN_SEC*distance.dt)).toISOString();
                         sqlQueryTemp += util.format("(%d,%d,%d,%d,'%s','%s'),",nextSessionID,distance.distance,distance.speed,distance.pace,distance.motion,time);
                     });
                     sqlQuery += sqlQueryTemp.slice(0,-1);
+		    sqlQueryTemp = "";
                     sqlQuery += ";\n"
                 }
+		sqlQuery += "END\n"
             });
         });
 
