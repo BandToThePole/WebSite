@@ -204,8 +204,8 @@ function postData(req, res) {
 
                 nextSessionID += 1; //increment value to get new unique value
                 var sqlQueryTemp = "" //improve slicing efficiency
-                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE StartTime = '%s')\nBEGIN\n", session.start);
-		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
+                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE SessionGUID = '%s')\nBEGIN\n", session.guid);
+		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,session.guid);
                 var startDate = new Date(session.start);
 
                 const MILLISEC_IN_SEC = 1000;
