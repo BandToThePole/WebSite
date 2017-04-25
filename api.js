@@ -180,7 +180,7 @@ function postData(req, res) {
                 // log.push(err);
             }
             else {
-                console.log(sqlQuery)
+                //console.log(sqlQuery)
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
                     if (err) {
                         // log.push(err);
@@ -197,11 +197,11 @@ function postData(req, res) {
             var nextSessionID = columns[0].value
             var duplicateFound = false; // Indicates whether a duplicate is found.
             body.recording_sessions.forEach(function(session) {
-                console.log(`Session ${nextSessionID + 1}: `);
-                console.log(session);
+                //console.log(`Session ${nextSessionID + 1}: `);
+                //console.log(session);
 
                 requestDuplicate.addParameter('start', TYPES.DateTime2, session.start);
-                console.log(`Now executing ${nextSessionID + 1}`);
+                //console.log(`Now executing ${nextSessionID + 1}`);
                 connection.execSql(requestDuplicate);
 
                 nextSessionID += 1; //increment value to get new unique value
