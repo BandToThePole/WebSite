@@ -184,9 +184,12 @@ function postData(req, res) {
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
                     if (err) {
                         console.log(err);
+			res.sendStatus(500);
                     }
+		    else {
+			res.sendStatus(202);
+		    }
                     connection.release();
-                    res.send("Data written\n");
                 });
                 writeRequest.addParameter('name',TYPES.VarChar, req.userid);
                 connection.execSql(writeRequest);
