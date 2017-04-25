@@ -166,6 +166,8 @@ function auth(req,res,next) {
 }
 
 function postData(req, res) {
+    const dateCutoff = new Date('2017-01-01T00:00:00');
+    
     var sqlQuery = "" //sqlQuery to be built
     var body = JSON.parse(zlib.inflateRawSync(req.body).toString());
 
@@ -202,11 +204,15 @@ function postData(req, res) {
                 //console.log(`Session ${nextSessionID + 1}: `);
                 //console.log(session);
 
+		var startDate = new Date(session.start);
+		if(dateCutoff > startDate){//ignore session as it is too early
+		    return true; //Acts as continue in forEach
+		}
+
                 nextSessionID += 1; //increment value to get new unique value
                 var sqlQueryTemp = "" //improve slicing efficiency
-                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE StartTime = '%s')\nBEGIN\n", session.start);
-		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,"!!What Goes Here!!");
-                var startDate = new Date(session.start);
+                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE SessionGUID = '%s')\nBEGIN\n", session.guid);
+		sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,session.guid);
 
                 const MILLISEC_IN_SEC = 1000;
 
