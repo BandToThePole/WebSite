@@ -18,8 +18,13 @@ function graphs(req, res) {
     res.render('graphs', { title: "Graphs", activeGraphs: true });
 }
 
+function twitter(req, res) {
+    res.render('twitter', { title: "Twitter", activeTwitter: true });
+}
+
 exports.home = home;
 exports.team = team;
+exports.twitter = twitter;
 exports.log = log;
 exports.data = data;
 exports.graphs = graphs;

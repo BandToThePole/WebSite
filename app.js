@@ -17,6 +17,7 @@ app.set('view engine', 'handlebars');
 
 // Add new dynamic page paths here
 app.get('/team', site.team);
+app.get('/twitter', site.twitter);
 app.get('/log', site.log);
 app.get('/data', site.data);
 app.get('/graphs', site.graphs);
