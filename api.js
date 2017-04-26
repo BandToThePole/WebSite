@@ -2,6 +2,7 @@ var util = require('util');
 const zlib = require('zlib');
 var basicAuth = require('basic-auth');
 var uuid = require('uuid/v4');
+var sha3 = require('sha3');
 var db = require('./db.js');
 var api = require('./api.js');
 
@@ -167,8 +168,11 @@ function auth(req,res,next) {
             }
         });
 
+	var sha = new SHA3.SHA3HASH();
+	sha.update(user.pass);
+
         requestAuth.addParameter('name',TYPES.VarChar,user.name);
-        requestAuth.addParameter('pass',TYPES.VarChar,user.pass);
+        requestAuth.addParameter('pass',TYPES.VarChar,sha.update('hex'));
 
         connection.execSql(requestAuth);
     });
