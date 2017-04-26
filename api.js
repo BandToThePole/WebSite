@@ -24,7 +24,9 @@ function getQuery(query,defvalue) {
 function makeUUID(session) {
     if (typeof session.guid == 'undefined') {
 	session.guid = uuid()
+	return true;
     }
+    return false;
 }
 
 function generateString(Columns,table,user) {
@@ -209,7 +211,6 @@ function postData(req, res) {
             var nextSessionID = columns[0].value;
             body.recording_sessions.forEach(function(session) {
 
-		makeUUID(session);
 		
                 //console.log(`Session ${nextSessionID + 1}: `);
                 //console.log(session);
@@ -221,7 +222,14 @@ function postData(req, res) {
 
                 nextSessionID += 1; //increment value to get new unique value
                 var sqlQueryTemp = ""; //improve slicing efficiency
-                sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE SessionGUID = '%s')\nBEGIN\n", session.guid);
+
+		if(makeUUID(session)){// If a new UUID was made do duplicate elimination based off starttime
+		    sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE StartTime = '%s')\nBEGIN\n", session.start);
+		}
+		else { // otherwise use UUID
+                    sqlQuery += util.format("IF NOT EXISTS(SELECT * FROM Sessions WHERE SessionGUID = '%s')\nBEGIN\n", session.guid);
+		}
+		
                 sqlQuery += util.format("INSERT INTO Sessions VALUES (%d,'%s','%s','%s',@name);\n",nextSessionID,session.start,session.end,session.guid);
 
                 const MILLISEC_IN_SEC = 1000;
