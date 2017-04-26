@@ -272,7 +272,7 @@ function postData(req, res) {
 }
 
 // This call will be prefixed by an auth call, so we just need to send 200
-function check() {
+function check(req, res) {
     res.sendStatus(200);
 }
 
