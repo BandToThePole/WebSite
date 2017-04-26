@@ -1,6 +1,7 @@
 var util = require('util');
 const zlib = require('zlib');
 var basicAuth = require('basic-auth');
+var uuid = require('uuid/v4');
 var db = require('./db.js');
 var api = require('./api.js');
 
@@ -17,6 +18,12 @@ function getQuery(query,defvalue) {
     }
     else {
         return query
+    }
+}
+
+function makeUUID(session) {
+    if (typeof session.guid == 'undefined') {
+	session.guid = uuid()
     }
 }
 
@@ -201,6 +208,9 @@ function postData(req, res) {
         request.on('row', function(columns) {
             var nextSessionID = columns[0].value;
             body.recording_sessions.forEach(function(session) {
+
+		makeUUID(session);
+		
                 //console.log(`Session ${nextSessionID + 1}: `);
                 //console.log(session);
 
