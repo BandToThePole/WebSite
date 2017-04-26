@@ -12,7 +12,8 @@
     "express": "*",
     "express-handlebars": "^3.0.0",
     "tedious": "*",
-    "tedious-connection-pool": "^1.0.5"
+    "tedious-connection-pool": "^1.0.5",
+    "uuid": "^3.0.1"
   },
   "author": "",
   "license": "ISC"
