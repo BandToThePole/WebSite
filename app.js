@@ -25,6 +25,7 @@ app.get('/', site.home);
 // Add new API paths here
 app.get('/api/log', api.getLog);
 app.get('/api/data', api.getData);
+app.get('/api/check', api.auth, api.check);
 app.post('/api/data', api.auth, api.postData);
 
 var port = process.env.PORT || 1337;
