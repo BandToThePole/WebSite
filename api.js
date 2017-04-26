@@ -2,7 +2,7 @@ var util = require('util');
 const zlib = require('zlib');
 var basicAuth = require('basic-auth');
 var uuid = require('uuid/v4');
-var sha3 = require('sha3');
+var crypto = require('crypto');
 var db = require('./db.js');
 var api = require('./api.js');
 
@@ -156,23 +156,40 @@ function auth(req,res,next) {
             //log.push(err);
             res.sendStatus(500);
         }
+
+	var hash = ""
+	var salt = ""
+	
         //usernames and passwords are case sensitive
-        requestAuth = new Request("SELECT * FROM Users WHERE USERNAME = @name AND PASSWORD = @pass", function(err,rowcount) {
+        requestAuth = new Request("SELECT * FROM Users WHERE USERNAME = @name", function(err,rowcount) {
             connection.release();
             if (!err && rowcount == 1) {
-                // pass username forward
-                req.userid = user.name;
-                return next();
+		//authentificate
+		crypto.pbkdf2(user.pass, salt, 100000, 256, 'sha256',function(err,key){
+		    if (err){
+			console.log(err);
+		    }
+		    else if(hash == key.toString('hex')){
+			// pass username forward
+			req.userid = user.name;
+			return next();
+		    }
+		    else {
+			return unauthorized(res);
+		    }
+		});
+			    
             } else {
                 return unauthorized(res);
             }
         });
 
-	var sha = new SHA3.SHA3HASH();
-	sha.update(user.pass);
+	requestAuth.addParameter('name',TYPES.VarChar,user.name);
 
-        requestAuth.addParameter('name',TYPES.VarChar,user.name);
-        requestAuth.addParameter('pass',TYPES.VarChar,sha.update('hex'));
+	requestAuth.on('row',function(column){
+	    hash = column[2].value;
+	    salt = column[3].value;
+	});       
 
         connection.execSql(requestAuth);
     });
