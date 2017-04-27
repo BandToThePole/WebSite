@@ -39,83 +39,69 @@ function generateString(Columns,table,user) {
     }
 }
 
-function getData(req, res) {
+function data(start,end,user,next){
     var toReturn = {
         'locations': [],
         'heart_rates': [],
         'calories': [],
         'distances': []
     }
-
-    var startDate = getQuery(req.query.start, '0001-01-01T00:00:00.000Z');
-    var endDate = getQuery(req.query.end, '9999-12-31T23:59:59.999Z');
-
-    //console.log(startDate);
-    //console.log(endDate);
-    //console.log(req.query.user);
-
-    //console.log(generateString("Time,Lat,Long", "Locations",req.query.user));
-
+    
     db.pool.acquire(function(err,connection) {
         if (err) {
-            //log.push(err);
-            res.sendStatus(500);
+            next(err,null);
             return
         }
 
-        requestLocation = new Request(generateString("Time,Lat,Long", "Locations",req.query.user), function(err, rowCount) {
+        requestLocation = new Request(generateString("Time,Lat,Long", "Locations",user), function(err, rowCount) {
             if (err) {
-                // TODO: Better error handling
-                //log.push(err);
+                next(err,null);
             }
             connection.execSql(requestHeartRate);
         });
 
-        requestHeartRate = new Request(generateString("Time,bpm","HeartRates",req.query.user) , function(err, rowCount) {
+        requestHeartRate = new Request(generateString("Time,bpm","HeartRates",user) , function(err, rowCount) {
             if (err) {
-                // TODO: Better error handling
-                //log.push(err);
+                next(err,null);
             }
             connection.execSql(requestCalories);
         });
 
-        requestCalories = new Request(generateString("Time,kcalcount","Calories",req.query.user) , function(err, rowCount) {
+        requestCalories = new Request(generateString("Time,kcalcount","Calories",user) , function(err, rowCount) {
             if (err) {
-                // TODO: Better error handling
-                //log.push(err);
+                next(err,null);
             }
             connection.execSql(requestDistances);
         });
 
-        requestDistances = new Request(generateString("Time, distance, speed, pace, motion","Distances",req.query.user), function(err, rowCount) {
+        requestDistances = new Request(generateString("Time, distance, speed, pace, motion","Distances",user), function(err, rowCount) {
             if (err) {
-                // TODO: Better error handling
-                //log.push(err);
+                next(err,null);
             }
             else {
                 connection.release();
-                res.send(toReturn);
+                next(null,toReturn);
             }
         });
 
 
-        requestLocation.addParameter('start', TYPES.DateTime2, startDate);
-        requestLocation.addParameter('end', TYPES.DateTime2, endDate);
+        requestLocation.addParameter('start', TYPES.DateTime2, start);
+        requestLocation.addParameter('end', TYPES.DateTime2, end);
 
-        requestHeartRate.addParameter('start', TYPES.DateTime2, startDate);
-        requestHeartRate.addParameter('end', TYPES.DateTime2, endDate);
+        requestHeartRate.addParameter('start', TYPES.DateTime2, start);
+        requestHeartRate.addParameter('end', TYPES.DateTime2, end);
 
-        requestCalories.addParameter('start', TYPES.DateTime2, startDate);
-        requestCalories.addParameter('end', TYPES.DateTime2, endDate);
+        requestCalories.addParameter('start', TYPES.DateTime2, start);
+        requestCalories.addParameter('end', TYPES.DateTime2, end);
 
-        requestDistances.addParameter('start', TYPES.DateTime2, startDate);
-        requestDistances.addParameter('end', TYPES.DateTime2, endDate);
+        requestDistances.addParameter('start', TYPES.DateTime2, start);
+        requestDistances.addParameter('end', TYPES.DateTime2, end);
 
-        if(typeof req.query.user != 'undefined') {
-            requestLocation.addParameter('user', TYPES.VarChar, req.query.user);
-            requestHeartRate.addParameter('user', TYPES.VarChar, req.query.user);
-            requestCalories.addParameter('user', TYPES.VarChar, req.query.user);
-            requestDistances.addParameter('user', TYPES.VarChar, req.query.user);
+        if(typeof user != 'undefined') {
+            requestLocation.addParameter('user', TYPES.VarChar, user);
+            requestHeartRate.addParameter('user', TYPES.VarChar, user);
+            requestCalories.addParameter('user', TYPES.VarChar, user);
+            requestDistances.addParameter('user', TYPES.VarChar, user);
         }
 
         requestLocation.on('row', function (columns) {
@@ -136,6 +122,21 @@ function getData(req, res) {
 
         connection.execSql(requestLocation);
     });
+}
+
+function getData(req, res) {
+    var startDate = getQuery(req.query.start, '0001-01-01T00:00:00.000Z');
+    var endDate = getQuery(req.query.end, '9999-12-31T23:59:59.999Z');
+
+    data(startDate,endDate,req.query.user,function(err,ret){
+	if(err){
+	    console.log(err);
+	    res.sendStatus(500);
+	}
+	else {
+	    res.send(ret);
+	}
+    });   
 }
 
 //Authenticator function
