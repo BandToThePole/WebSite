@@ -111,27 +111,14 @@ function addHeartRateData(container, data) {
 }
 
 function addCalorieData(container, data) {
-    var dates = [], values = [];
-    for (var i = 0; i < data["calories"].length; i++) {
-        var datum = data["calories"][i];
-        dates.push(new Date(datum.time));
-        values.push(datum.kcalcount);
-    }
-    var dateValues = totalPerDay(dates, values);
-    var labels = [], values = [];
-    for (var i = 0; i < dateValues.length; i++) {
-        labels.push(shortDate(dateValues[i].date));
-        values.push(dateValues[i].value);
-    }
+    var labels = data["daily_calories"].map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_calories"].map(function(datum) { return datum.kcalcount });
     createBarChart(container, "Calories", labels, values);
 }
 
 function addDistanceData(container, data) {
-    var dates = data["distances"].map(function(datum) { return new Date(datum.time) });
-    var values = data["distances"].map(function(datum) { return datum.distance });
-    var dateValues = totalPerDay(dates, values);
-    var labels = dateValues.map(function(datum) { return shortDate(datum.date) });
-    values = dateValues.map(function(datum) { return datum.value });
+    var labels = data["daily_distances"].map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_distances"].map(function(datum) { return datum.distance });
     createBarChart(container, "Distances", labels, values);
 }
 

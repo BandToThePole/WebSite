@@ -39,6 +39,15 @@ function generateString(Columns,table,user) {
     }
 }
 
+function generateDailyString(Columns,table,user) {
+    if (typeof user == 'undefined') {
+        return "SELECT " + Columns + " FROM " + table;
+    }
+    else {
+        return "SELECT " + Columns + " FROM " + table + " WHERE USERNAME=@user";
+    }
+}
+
 function data(start,end,user,next){
     var toReturn = {
         'locations': [],
@@ -46,7 +55,7 @@ function data(start,end,user,next){
         'calories': [],
         'distances': [],
 	'daily_calories': [],
-	'daily_distance': []
+	'daily_distances': []
     }
 
     var startDate = getQuery(start, '0001-01-01T00:00:00.000Z');
@@ -86,14 +95,14 @@ function data(start,end,user,next){
             connection.execSql(requestDailyCalories);
         });
 
-	requestDailyCalories = new Request(generateString("Date,kcal", "DailyCalories",user) , function(err, rowCount) {
+	requestDailyCalories = new Request(generateDailyString("Date,kcal", "DailyCalories",user) , function(err, rowCount) {
 	    if (err) {
 		next(err,null);
 	    }
-	    connection.execSql(requestDailyDistance);
+	    connection.execSql(requestDailyDistances);
 	});
 
-	requestDailyDistance = new Request(generateString("Date,Distance", "DailyDistances", user), function(err, rowCount) {
+	requestDailyDistances = new Request(generateDailyString("Date,Distance", "DailyDistances", user), function(err, rowCount) {
 	    connection.release();
 	    if (err) {
 		next(err,null);
@@ -116,12 +125,6 @@ function data(start,end,user,next){
 
         requestDistances.addParameter('start', TYPES.DateTime2, startDate);
         requestDistances.addParameter('end', TYPES.DateTime2, endDate);
-
-	requestDailyCalories.addParameter('start', TYPES.DateTime2, startDate);
-        requestDailyCalories.addParameter('end', TYPES.DateTime2, endDate);
-
-        requestDailyDistances.addParameter('start', TYPES.DateTime2, startDate);
-        requestDailyDistances.addParameter('end', TYPES.DateTime2, endDate);
 
         if(typeof user != 'undefined') {
             requestLocation.addParameter('user', TYPES.VarChar, user);
@@ -148,11 +151,11 @@ function data(start,end,user,next){
             toReturn.distances.push({'time':columns[0].value, 'distance' : columns[1].value, 'speed' : columns[2].value, 'pace' : columns[3].value, 'motion' : columns[4].value})
         });
 
-	requestCalories.on('row', function (columns) {
+	requestDailyCalories.on('row', function (columns) {
             toReturn.daily_calories.push({'date':columns[0].value,'kcalcount':columns[1].value})
         });
 
-        requestDistances.on('row', function (columns) {
+        requestDailyDistances.on('row', function (columns) {
             toReturn.daily_distances.push({'date':columns[0].value, 'distance' : columns[1].value})
         });
 
@@ -161,7 +164,7 @@ function data(start,end,user,next){
 }
 
 function getData(req, res) {
-    data(startDate,endDate,req.query.user,function(err,ret){
+    data(req.query.start,req.query.end,req.query.user,function(err,ret){
 	if(err){
 	    console.log(err);
 	    res.sendStatus(500);
