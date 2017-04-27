@@ -18,13 +18,12 @@ app.set('view engine', 'handlebars');
 // Add new dynamic page paths here
 app.get('/team', site.team);
 app.get('/twitter', site.twitter);
-app.get('/log', site.log);
 app.get('/data', site.data);
 app.get('/graphs', site.graphs);
 app.get('/', site.home);
 
 // Add new API paths here
-app.get('/api/log', api.getLog);
+app.get('/api/log', api.auth, api.getLog);
 app.get('/api/data', api.getData);
 app.get('/api/check', api.auth, api.check);
 app.post('/api/data', api.auth, api.postData);
