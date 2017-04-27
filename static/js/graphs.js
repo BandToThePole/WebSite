@@ -74,7 +74,7 @@ function createScatterChart(container, title, xAxis, yAxis) {
     });
 }
 
-function createBarChart(container, title, labels, values) {
+function createBarChart(container, title, labels, values,yaxislabel) {
     var canvas = createChart(container, title);
     var chart = new Chart(canvas, {
         type: "bar",
@@ -91,6 +91,11 @@ function createBarChart(container, title, labels, values) {
             },
             scales: {
                 yAxes: [{
+		    scaleLabel : {
+			display : true,
+			labelString : yaxislabel,
+			fontSize : 20
+		    },
                     ticks: {
                         beginAtZero: true
                     }
@@ -113,13 +118,13 @@ function addHeartRateData(container, data) {
 function addCalorieData(container, data) {
     var labels = data["daily_calories"].map(function(datum) { return shortDate(new Date(datum.date)) });
     var values = data["daily_calories"].map(function(datum) { return datum.kcalcount });
-    createBarChart(container, "Calories", labels, values);
+    createBarChart(container, "Calories", labels, values, 'Calories (kcal)');
 }
 
 function addDistanceData(container, data) {
     var labels = data["daily_distances"].map(function(datum) { return shortDate(new Date(datum.date)) });
-    var values = data["daily_distances"].map(function(datum) { return datum.distance });
-    createBarChart(container, "Distances", labels, values);
+    var values = data["daily_distances"].map(function(datum) { return datum.distance/100 /*Convert from centimeters to meters*/ });
+    createBarChart(container, "Distances", labels, values, 'Distance Traveled (m)' );
 }
 
 function showGraphs(data) {
