@@ -46,6 +46,9 @@ function data(start,end,user,next){
         'calories': [],
         'distances': []
     }
+
+    var startDate = getQuery(start, '0001-01-01T00:00:00.000Z');
+    var endDate = getQuery(end, '9999-12-31T23:59:59.999Z');
     
     db.pool.acquire(function(err,connection) {
         if (err) {
@@ -85,17 +88,17 @@ function data(start,end,user,next){
         });
 
 
-        requestLocation.addParameter('start', TYPES.DateTime2, start);
-        requestLocation.addParameter('end', TYPES.DateTime2, end);
+        requestLocation.addParameter('start', TYPES.DateTime2, startDate);
+        requestLocation.addParameter('end', TYPES.DateTime2, endDate);
 
-        requestHeartRate.addParameter('start', TYPES.DateTime2, start);
-        requestHeartRate.addParameter('end', TYPES.DateTime2, end);
+        requestHeartRate.addParameter('start', TYPES.DateTime2, startDate);
+        requestHeartRate.addParameter('end', TYPES.DateTime2, endDate);
 
-        requestCalories.addParameter('start', TYPES.DateTime2, start);
-        requestCalories.addParameter('end', TYPES.DateTime2, end);
+        requestCalories.addParameter('start', TYPES.DateTime2, startDate);
+        requestCalories.addParameter('end', TYPES.DateTime2, endDate);
 
-        requestDistances.addParameter('start', TYPES.DateTime2, start);
-        requestDistances.addParameter('end', TYPES.DateTime2, end);
+        requestDistances.addParameter('start', TYPES.DateTime2, startDate);
+        requestDistances.addParameter('end', TYPES.DateTime2, endDate);
 
         if(typeof user != 'undefined') {
             requestLocation.addParameter('user', TYPES.VarChar, user);
@@ -125,9 +128,6 @@ function data(start,end,user,next){
 }
 
 function getData(req, res) {
-    var startDate = getQuery(req.query.start, '0001-01-01T00:00:00.000Z');
-    var endDate = getQuery(req.query.end, '9999-12-31T23:59:59.999Z');
-
     data(startDate,endDate,req.query.user,function(err,ret){
 	if(err){
 	    console.log(err);
@@ -196,6 +196,104 @@ function auth(req,res,next) {
     });
 }
 
+// The largest value for each day (uses UTC) is used. The first data point has
+// to be excluded so that we have a baseline. The function returns an array of {
+// date, value } objects
+function totalPerDay(dates, values) {
+    function day(date) {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    }
+    var uniqueDates = new Set();
+    for (var i = 0; i < dates.length; i++) {
+	uniqueDates.add(day(dates[i]));
+    }
+
+    var uniqueDatesSorted = Array.from(uniqueDates.values()).sort();
+    var uniqueDateValues = {};
+
+    for (var i = 0; i < values.length; i++) {
+	var d = day(dates[i]);
+	if (!(d in uniqueDateValues) || values[i] > uniqueDateValues[d]) {
+	    uniqueDateValues[d] = values[i];
+	}
+    }
+
+    var dataPoints = [];
+    for (var i = 1; i < uniqueDatesSorted.length; i++) {
+	var pd = uniqueDatesSorted[i - 1];
+	var d = uniqueDatesSorted[i];
+	dataPoints.push({ date: new Date(d), value: (uniqueDateValues[d] - uniqueDateValues[pd]) });
+    }
+    return dataPoints;
+}
+
+function resetDailyTables(user,next) {
+    data(undefined,undefined,user,function(err,ret){
+	if(err){
+	    next(err);
+	}
+	else {
+	    dates = []; values = []
+	    ret.calories.forEach(function(datum) {
+		dates.push(new Date(datum.time));
+		values.push(datum.kcalcount);
+	    });
+	    console.log(dates);
+	    var dailyCalories = totalPerDay(dates,values);
+	    
+	    dates = []; values = []
+	    ret.distances.forEach(function(datum) {
+		dates.push(new Date(datum.time));
+		values.push(datum.distance);
+	    });
+	    var dailyDistances = totalPerDay(dates,values);
+	    
+	    var sqlQuery = "DELETE FROM DailyCalories WHERE USERNAME = @user;\n";
+	    if(dailyCalories.length > 0){
+		sqlQuery += "INSERT INTO DailyCalories VALUES ";
+		for (var i = 0; i < dailyCalories.length; i++){
+		    sqlQuery += util.format("(%d,'%s',%d, '%s')",i,dailyCalories[i].date.toISOString(),dailyCalories[i].value,user);
+		    if(i == dailyCalories.length - 1){
+			sqlQuery += ";\n";
+		    }
+		    else {
+			sqlQuery += ", ";
+		    }
+		}
+	    }
+	    sqlQuery += "DELETE FROM DailyDistances WHERE USERNAME = @user;\n";
+	    if(dailyDistances.length > 0){
+	    sqlQuery += "INSERT INTO DailyDistances VALUES ";
+		for (var i = 0; i < dailyDistances.length; i++){
+		    sqlQuery += util.format("(%d,'%s',%d, '%s')",i,dailyDistances[i].date.toISOString(),dailyDistances[i].value,user);
+		    if(i == dailyDistances.length - 1){
+			sqlQuery += ";\n";
+		    }
+		    else {
+			sqlQuery += ", ";
+		    }
+		}
+	    }
+	    console.log(sqlQuery);
+	    db.pool.acquire(function(err,connection) {
+		if (err) {
+		    next(err);
+		}
+		else{
+		    request = new Request(sqlQuery,function(err, rowCount) {
+			connection.release();
+			next(err);
+		    });
+
+		    request.addParameter('user',TYPES.VarChar, user);
+
+		    connection.execSql(request);
+		}
+	    });
+	}
+    });
+}	    
+
 function postData(req, res) {
     const dateCutoff = new Date('2017-01-01T00:00:00');
 
@@ -213,16 +311,23 @@ function postData(req, res) {
                 // log.push(err);
             }
             else {
-                console.log(sqlQuery);
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
-                    if (err) {
+		    connection.release();
+		    if (err) {
                         console.log(err);
                         res.sendStatus(500);
                     }
                     else {
-                        res.sendStatus(202);
+			resetDailyTables(req.userid,function(err){
+			    if(err){
+				console.log(err);
+				res.sendStatus(500);
+			    }
+			    else{
+				res.sendStatus(202);
+			    }
+			});
                     }
-                    connection.release();
                 });
                 writeRequest.addParameter('name',TYPES.VarChar, req.userid);
                 connection.execSql(writeRequest);
