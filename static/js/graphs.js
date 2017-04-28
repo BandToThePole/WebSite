@@ -74,7 +74,7 @@ function createScatterChart(container, title, xAxis, yAxis) {
     });
 }
 
-function createBarChart(container, title, labels, values) {
+function createBarChart(container, title, labels, values,yaxislabel) {
     var canvas = createChart(container, title);
     var chart = new Chart(canvas, {
         type: "bar",
@@ -91,6 +91,11 @@ function createBarChart(container, title, labels, values) {
             },
             scales: {
                 yAxes: [{
+		    scaleLabel : {
+			display : true,
+			labelString : yaxislabel,
+			fontSize : 20
+		    },
                     ticks: {
                         beginAtZero: true
                     }
@@ -111,28 +116,15 @@ function addHeartRateData(container, data) {
 }
 
 function addCalorieData(container, data) {
-    var dates = [], values = [];
-    for (var i = 0; i < data["calories"].length; i++) {
-        var datum = data["calories"][i];
-        dates.push(new Date(datum.time));
-        values.push(datum.kcalcount);
-    }
-    var dateValues = totalPerDay(dates, values);
-    var labels = [], values = [];
-    for (var i = 0; i < dateValues.length; i++) {
-        labels.push(shortDate(dateValues[i].date));
-        values.push(dateValues[i].value);
-    }
-    createBarChart(container, "Calories", labels, values);
+    var labels = data["daily_calories"].map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_calories"].map(function(datum) { return datum.kcalcount });
+    createBarChart(container, "Calories", labels, values, 'Calories (kcal)');
 }
 
 function addDistanceData(container, data) {
-    var dates = data["distances"].map(function(datum) { return new Date(datum.time) });
-    var values = data["distances"].map(function(datum) { return datum.distance });
-    var dateValues = totalPerDay(dates, values);
-    var labels = dateValues.map(function(datum) { return shortDate(datum.date) });
-    values = dateValues.map(function(datum) { return datum.value });
-    createBarChart(container, "Distances", labels, values);
+    var labels = data["daily_distances"].map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_distances"].map(function(datum) { return datum.distance/100 /*Convert from centimeters to meters*/ });
+    createBarChart(container, "Distances", labels, values, 'Distance Traveled (m)' );
 }
 
 function showGraphs(data) {
