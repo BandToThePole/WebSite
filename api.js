@@ -344,7 +344,7 @@ function postData(req, res) {
 
         request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err, rowCount) {
             if (err) {
-                // log.push(err);
+                res.sendStatus(500);
             }
             else {
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
