@@ -37,7 +37,6 @@ function drawSouthPole(container, title) {
     }
     var ctx = canvas.getContext("2d");
     for (var i = 0; i < pinlocations.length; i++) {
-        console.log(i);
         if (i > 0) {
             ctx.beginPath();
             ctx.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
