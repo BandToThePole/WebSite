@@ -1,7 +1,53 @@
-// Returns a canvas
+
 
 // Returns a map with the location coordinates. Things 5% close to the poles disapear. Center of the map is the average of the coordinates.
 var pinInfobox;
+
+
+function drawSouthPole(container, title) {
+
+    var div = document.createElement('div');
+    div.classList.add('SouthPoleMap');
+    var header = document.createElement('h2');
+    header.textContent = title;
+    div.appendChild(header);
+    container.appendChild(div);
+
+    var canvas = document.createElement('canvas');
+    canvas.width = 1000;
+    canvas.height = 1000;
+    div.appendChild(canvas);
+
+    var context = canvas.getContext("2d");
+
+    var background = document.getElementById("back");
+    var pin = document.getElementById("pin");
+    context.drawImage(background, 0, 0);
+    var pinlocations = new Array
+    // pinlocations has the coordinates for now
+    var distance = 0;
+    pinlocations[0] = { 'x': -72.21, 'y': 103 };
+    pinlocations[1] = { 'x': -60.44, 'y': 81.44 };
+    pinlocations[2] = { 'x': -90, 'y': 0 };
+    for (var i = 0; i < pinlocations.length; i++) {
+        if (pinlocations[i].y < 0) { pinlocations[i].y = pinlocations + 360; }
+        distance = Math.sqrt(pinlocations[i].x + 90) * 78.71;
+        pinlocations[i].x = Math.round(500 + Math.sin(pinlocations[i].y+90) * distance);
+        pinlocations[i].y = Math.round(500 - Math.cos(pinlocations[i].y+90) * distance);
+    }
+    var ctx = canvas.getContext("2d");
+    for (var i = 0; i < pinlocations.length; i++) {
+        console.log(i);
+        if (i > 0) {
+            ctx.beginPath();
+            ctx.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
+            ctx.lineTo(pinlocations[i].x, pinlocations[i].y);
+            ctx.strokeStyle = "red";
+            ctx.stroke();
+        }
+        context.drawImage(pin, pinlocations[i].x -10, pinlocations[i].y - 20);
+    }
+}
 
 function GetMap() {
     get("/api/data", function (data) {
@@ -181,7 +227,10 @@ function addDistanceData(container, data) {
 
 function showGraphs(data) {
     var container = document.getElementById("graphs-container");
+    var mapcontainer = document.getElementById("SouthPoleMap");
     empty(container);
+    empty(mapcontainer);
+    drawSouthPole(mapcontainer, data);
     addHeartRateData(container, data);
     addCalorieData(container, data);
     addDistanceData(container, data);
@@ -195,3 +244,5 @@ onready(function() {
     linkClick("refresh-link", refresh);
     refresh();
 });
+
+
