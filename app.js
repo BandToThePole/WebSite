@@ -20,6 +20,7 @@ app.get('/team', site.team);
 app.get('/twitter', site.twitter);
 app.get('/data', site.data);
 app.get('/graphs', site.graphs);
+app.get('/antarctica', site.antarctica);
 app.get('/', site.home);
 
 // Add new API paths here

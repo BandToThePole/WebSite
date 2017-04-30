@@ -18,8 +18,12 @@ function twitter(req, res) {
     res.render('twitter', { title: "Twitter", activeTwitter: true });
 }
 
+function antarctica(req, res) {
+    res.render('antarctica', { title: "Antarctica Map", activeMap: true});
+}
 exports.home = home;
 exports.team = team;
 exports.twitter = twitter;
 exports.data = data;
 exports.graphs = graphs;
+exports.antarctica = antarctica;
