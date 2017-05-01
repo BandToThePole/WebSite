@@ -171,6 +171,66 @@ function createScatterChart(container, title, xAxis, yAxis) {
     });
 }
 
+//create the chart calories/distances
+function createScatterDCChart(container, title, xAxis, yAxis) {
+    var canvas = createChart(container, title);
+
+    var xyData = [];
+    for (var i = 0; i < Math.min(xAxis.length, yAxis.length); i++) {
+        xyData.push({x: xAxis[i], y: yAxis[i]});
+    }
+
+    var chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: "Calories",
+                data: xyData,
+                borderColor: "#000000",
+                backgroundColor: "#0C5DCF"
+            }]
+        },
+        options: {
+            showLines: false,
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                    title: function(tooltip, data, labels) {
+                        var str = "Distance: "+ tooltip[0].xLabel.toString() + "m";
+                        return str;
+                    }
+                }
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel : {
+                        display : true,
+                        labelString : "Distance traveled (m)",
+                        fontSize : 20
+                    },
+                    type: 'linear',
+                    position: 'bottom',
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel : {
+                        display : true,
+                        labelString : "Calories (kcal)",
+                        fontSize : 20
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+}
+
 function createBarChart(container, title, labels, values,yaxislabel) {
     var canvas = createChart(container, title);
     var chart = new Chart(canvas, {
@@ -224,6 +284,18 @@ function addDistanceData(container, data) {
     createBarChart(container, "Distances", labels, values, 'Distance Traveled (m)' );
 }
 
+function addDistCalorieData(container, data) {
+    var distanceValues = [], calorieValues = [], dateTimes = [];
+    for (var i = 0; i < data["daily_calories"].length; i++) {
+        calorieValues.push(data["daily_calories"][i].kcalcount);
+        dateTimes.push(new Date(data["daily_calories"][i].time).getTime());
+    }
+    for (var i = 0; i < data["daily_distances"].length; i++) {
+        distanceValues.push(data["daily_distances"][i].distance/100);
+    }
+    createScatterDCChart(container, "Calories against Distance", distanceValues, calorieValues);
+}
+
 function showGraphs(data) {
     var container = document.getElementById("graphs-container");
     var mapcontainer = document.getElementById("SouthPoleMap");
@@ -233,6 +305,7 @@ function showGraphs(data) {
     addHeartRateData(container, data);
     addCalorieData(container, data);
     addDistanceData(container, data);
+    addDistCalorieData(container, data);
 }
 
 function refresh() {
