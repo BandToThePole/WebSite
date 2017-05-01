@@ -302,12 +302,12 @@ function showGraphs(data) {
     var mapcontainer = document.getElementById("SouthPoleMap");
     empty(container);
     empty(mapcontainer);
-    drawSouthPole(mapcontainer, "Map");
+    //drawSouthPole(mapcontainer, "Map");
     addHeartRateData(container, data);
     addCalorieData(container, data);
     addDistanceData(container, data);
     addDistCalorieData(container, data);
-    loadartic();
+    //loadartic();
 }
 
 function refresh() {
@@ -320,7 +320,9 @@ onready(function() {
 });
 
 
-
+$(function () {
+    $('.pannable-image').ImageViewer();
+});
 
 
 

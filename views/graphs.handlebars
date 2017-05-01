@@ -7,6 +7,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"
         crossorigin="anonymous"></script>
 <script src="/js/graphs.js"></script>
+<link href="css/imageviewer.css" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js"></script>
+<script src="js/imageviewer.js"></script>
 <script type='text/javascript' src='//www.bing.com/api/maps/mapcontrol?branch=release'></script>
 <body onload="GetMap();">
     <div id="map" style="position: relative; width: 600px; height: 450px;"></div>
@@ -17,6 +20,9 @@
 <img id="pin" width="1" height="1"
      src="images/pin.png" alt="bg">
 
-<div id="SouthPoleMap"></div>
+<div id="SouthPoleMap">
+<h>Map</h>
+<img src="images/south_pole.jpg" class="pannable-image">
+</div>
 
 
