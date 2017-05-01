@@ -286,10 +286,9 @@ function addDistanceData(container, data) {
 }
 
 function addDistCalorieData(container, data) {
-    var distanceValues = [], calorieValues = [], dateTimes = [];
+    var distanceValues = [], calorieValues = [];
     for (var i = 0; i < data["daily_calories"].length; i++) {
         calorieValues.push(data["daily_calories"][i].kcalcount);
-        dateTimes.push(new Date(data["daily_calories"][i].time).getTime());
     }
     for (var i = 0; i < data["daily_distances"].length; i++) {
         distanceValues.push(data["daily_distances"][i].distance/100);
