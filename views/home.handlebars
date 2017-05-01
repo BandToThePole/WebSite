@@ -1,4 +1,5 @@
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"
+        crossorigin="anonymous"></script>
 <div class="container">
     <div class="row">
         <h1>Band to the Pole</h1>
@@ -14,8 +15,9 @@
         </div>
         <div id="home-graphs" class="col-md-4">
             <h2>Latest graph</h2>
-            <strong>TODO:</strong>
-            
+            <p><a href="#" id="refresh-link">Refresh</a></p>
+            <div id="graphs-container"></div>
+            <script src="/js/home.js"></script>
         </div>
         <div class="col-md-4">
             <h2>Latest tweets</h2>
