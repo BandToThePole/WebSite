@@ -350,8 +350,6 @@ function loadartic() {
         ctx.drawImage(gkhead, 0, 0);
 
     }
-    redraw();
-
     var lastX = canvas.width / 2, lastY = canvas.height / 2;
 
     var dragStart, dragged;
@@ -381,13 +379,15 @@ function loadartic() {
     }, false);
 
     var scaleFactor = 1.1;
+    var actualscale = 1;
 
     var zoom = function (clicks) {
         var pt = ctx.transformedPoint(lastX, lastY);
         ctx.translate(pt.x, pt.y);
-        var factor = Math.pow(scaleFactor, clicks);
+        var factor = Math.max(1/actualscale,Math.pow(scaleFactor, clicks));
         ctx.scale(factor, factor);
         ctx.translate(-pt.x, -pt.y);
+        actualscale = actualscale * factor;
         redraw();
     }
 
