@@ -14,6 +14,7 @@ function drawSouthPole(container, title) {
     container.appendChild(div);
 
     var canvas = document.createElement('canvas');
+    canvas.id = "SouthPoleCanvas";
     canvas.width = 1000;
     canvas.height = 1000;
     div.appendChild(canvas);
@@ -253,7 +254,7 @@ onready(function() {
 function loadartic() {
 
     var gkhead = new Image;
-    var canvas = document.getElementById("SouthPoleMap");
+    var canvas = document.getElementById("SouthPoleCanvas");
 
     gkhead.id = "pic";
     gkhead.src = canvas.toDataURL('image/jpeg', 1.0);
