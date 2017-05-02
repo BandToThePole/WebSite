@@ -9,9 +9,9 @@
   "dependencies": {
     "basic-auth": "^1.1.0",
     "body-parser": "*",
-    "canvas-prebuilt": "^1.6.5-prerelease.1",
     "express": "*",
     "express-handlebars": "^3.0.0",
+    "pureimage": "0.0.21",
     "tedious": "*",
     "tedious-connection-pool": "^1.0.5",
     "uuid": "^3.0.1"

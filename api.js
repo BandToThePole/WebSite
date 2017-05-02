@@ -4,7 +4,7 @@ var basicAuth = require('basic-auth');
 var uuid = require('uuid/v4');
 var crypto = require('crypto');
 var fs = require('fs');
-var Canvas = require('canvas');
+var PImage = require('pureimage');
 var db = require('./db.js');
 var api = require('./api.js');
 
@@ -330,19 +330,15 @@ function resetDailyTables(user,next) {
 		    connection.execSql(request);
 		}
 	    });
-	    var canvas = new Canvas(1000,1000);
+	    var canvas = PImage.make(1000,1000);
 
 	    var context = canvas.getContext("2d");
 
 	    fs.readFile('static/images/south_pole.jpg', function(err, back){
 		if (err) throw err;
-		img = new Canvas.Image;
-		img.src = back;
-		context.drawImage(img, 0, 0);
-		fs.readFile('static/images/pin.png', function(err, pin){
-		    if(err) throw err;
-		    pinimg = new Canvas.Image;
-		    pinimg.src = pin;
+		img = PImage.decodeJPEG(back);
+		context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
+		PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
 		    var pinlocations = new Array
 		    // pinlocations has the coordinates for now
 		    var distance = 0;
@@ -355,21 +351,17 @@ function resetDailyTables(user,next) {
 			pinlocations[i].x = Math.round(500 + Math.sin(pinlocations[i].y+90) * distance);
 			pinlocations[i].y = Math.round(500 - Math.cos(pinlocations[i].y+90) * distance);
 		    }
-		    var ctx = canvas.getContext("2d");
 		    for (var i = 0; i < pinlocations.length; i++) {
 			if (i > 0) {
-			    ctx.beginPath();
-			    ctx.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
-			    ctx.lineTo(pinlocations[i].x, pinlocations[i].y);
-			    ctx.strokeStyle = "red";
-			    ctx.stroke();
+			    context.beginPath();
+			    context.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
+			    context.lineTo(pinlocations[i].x, pinlocations[i].y);
+			    context.strokeStyle = "red";
+			    context.stroke();
 			}
-			context.drawImage(pinimg, pinlocations[i].x -10, pinlocations[i].y - 20);
+			context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pinlocations[i].x -10, pinlocations[i].y - 20,pinlocations[i].x + 10, pinlocations[i].y);
 		    }
-		    canvas.toBuffer(function(err, buf){
-			if(err) throw err;
-			fs.writeFile('static/images/south_pole_points.png',buf,(err) => { if(err) throw err;});
-		    });
+		    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
 		});
 	    });
 	    
