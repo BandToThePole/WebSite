@@ -348,7 +348,7 @@ function resetDailyTables(user,next) {
 		    pinlocations[2] = { 'lat': -83.75, 'long': 171};
 		    pinlocations[3] = { 'lat': -77.5, 'long': 168};
 		    for (var i = 0; i < pinlocations.length; i++) {
-			distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1096.45879733;
+			distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
 			pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
 					      y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
 		    }
