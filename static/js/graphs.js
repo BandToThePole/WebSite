@@ -19,11 +19,6 @@ function drawSouthPole(container, title) {
     canvas.width = 1000;
     canvas.height = 1000;
     div.appendChild(canvas);
-
-    var context = canvas.getContext("2d");
-
-    var background = document.getElementById("antarcticmap");
-    context.drawImage(background, 0, 0);
 }
 
 function GetMap() {
@@ -139,11 +134,14 @@ function loadartic() {
 
     var gkhead = new Image;
     var canvas = document.getElementById("SouthPoleCanvas");
-
-    gkhead.id = "pic";
-    gkhead.src = canvas.toDataURL('image/jpeg', 1.0);
-
     var ctx = canvas.getContext('2d');
+   
+    gkhead.onload = function(){
+	ctx.drawImage(gkhead,0,0);
+    }
+    gkhead.src = "images/south_pole_points.png";
+
+  
     trackTransforms(ctx);
 
     function redraw() {

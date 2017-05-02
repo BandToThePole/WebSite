@@ -70,7 +70,6 @@ function data(start,end,user,next){
 	'daily_calories': [],
 	'daily_distances': []
     }
-
     var startDate = getQuery(start, '0001-01-01T00:00:00.000Z');
     var endDate = getQuery(end, '9999-12-31T23:59:59.999Z');
     

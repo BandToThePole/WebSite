@@ -36,6 +36,31 @@ function addDistCalorieData(container, data) {
     createScatterDCChart(container, "Calories against Distance", distanceValues, calorieValues);
 }
 
+function addReducedMap(container,data) {
+    var x = 350;
+    var y = 350;
+    if(data.locations.length != 0) {
+	var lat = data.locations[data.locations.length-1].lat;
+	var lon = data.locations[data.locations.length-1].long;
+    
+	distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
+	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance) - 150;
+	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance) - 150;
+	x = Math.max(Math.min(x,700),0);
+	y = Math.max(Math.min(y,700),0);
+    }
+    var canvas = document.createElement('canvas');
+    canvas.width = 300;
+    canvas.height = 300;
+    container.appendChild(canvas);
+    var img = new Image;
+    var ctx = canvas.getContext('2d');
+    img.onload = function(){
+	ctx.drawImage(img,x,y,300,300,0,0,300,300);
+    };
+    img.src = "images/south_pole_points.png";
+}
+
 function showGraphs(data) {
     var container = document.getElementById("graphs-container");
     empty(container);
@@ -43,8 +68,14 @@ function showGraphs(data) {
     //addCalorieData(container, data);
     //addDistanceData(container, data);
     //addDistCalorieData(container, data);
+    get("/api/data?user=AntarcticDemo", showMap);
 }
 
+function showMap(data) {
+    var mapContainer = document.getElementById("map-container");
+    empty(mapContainer)
+    addReducedMap(mapContainer,data);
+}
 
 function refresh() {
     get("/api/data", showGraphs);
