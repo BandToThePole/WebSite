@@ -330,42 +330,41 @@ function resetDailyTables(user,next) {
 		    connection.execSql(request);
 		}
 	    });
-	    var canvas = PImage.make(1000,1000);
+	    if(user == "AntarcticDemo"){
+		var canvas = PImage.make(1000,1000);
 
-	    var context = canvas.getContext("2d");
+		var context = canvas.getContext("2d");
 
-	    fs.readFile('static/images/south_pole.jpg', function(err, back){
-		if (err) throw err;
-		img = PImage.decodeJPEG(back);
-		context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
-		PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
-		    var pinlocations = []
-		    var pincoordinates = []
-		    // pinlocations has the coordinates for now
-		    var distance = 0;
-		    pinlocations[0] = { 'lat': -63.307, 'long': -55.050 };
-		    pinlocations[1] = { 'lat': -90, 'long': 0 };
-		    pinlocations[2] = { 'lat': -83.75, 'long': 171};
-		    pinlocations[3] = { 'lat': -77.5, 'long': 168};
-		    for (var i = 0; i < pinlocations.length; i++) {
-			distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
-			pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
-					      y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
-		    }
-		    for (var i = 0; i < pincoordinates.length; i++) {
-			if (i > 0) {
-			    context.beginPath();
-			    context.moveTo(pincoordinates[i - 1].x, pincoordinates[i - 1].y);
-			    context.lineTo(pincoordinates[i].x, pincoordinates[i].y);
-			    context.strokeStyle = "red";
-			    context.stroke();
+		fs.readFile('static/images/south_pole.jpg', function(err, back){
+		    if (err) throw err;
+		    img = PImage.decodeJPEG(back);
+		    context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
+		    PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
+			var pinlocations = []
+			var pincoordinates = []
+			ret.locations.forEach(function(location) {
+			    pinlocations.push(location);
+			});
+			var distance = 0;
+			for (var i = 0; i < pinlocations.length; i++) {
+			    distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
+			    pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
+						  y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
 			}
-			context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
-		    }
-		    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
+			for (var i = 0; i < pincoordinates.length; i++) {
+			    if (i > 0) {
+				context.beginPath();
+				context.moveTo(pincoordinates[i - 1].x, pincoordinates[i - 1].y);
+				context.lineTo(pincoordinates[i].x, pincoordinates[i].y);
+				context.strokeStyle = "red";
+				context.stroke();
+			    }
+			    context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
+			}
+			PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
+		    });
 		});
-	    });
-	    
+	    }
 	    
 	}
     });
