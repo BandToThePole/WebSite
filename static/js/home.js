@@ -40,9 +40,9 @@ function showGraphs(data) {
     var container = document.getElementById("graphs-container");
     empty(container);
     addHeartRateData(container, data);
-    addCalorieData(container, data);
-    addDistanceData(container, data);
-    addDistCalorieData(container, data);
+    //addCalorieData(container, data);
+    //addDistanceData(container, data);
+    //addDistCalorieData(container, data);
 }
 
 
