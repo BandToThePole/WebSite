@@ -339,27 +339,28 @@ function resetDailyTables(user,next) {
 		img = PImage.decodeJPEG(back);
 		context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
 		PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
-		    var pinlocations = new Array
+		    var pinlocations = []
+		    var pincoordinates = []
 		    // pinlocations has the coordinates for now
 		    var distance = 0;
-		    pinlocations[0] = { 'x': -72.21, 'y': 103 };
-		    pinlocations[1] = { 'x': -60.44, 'y': 81.44 };
-		    pinlocations[2] = { 'x': -90, 'y': 0 };
+		    pinlocations[0] = { 'lat': -63.307, 'long': -55.050 };
+		    pinlocations[1] = { 'lat': -90, 'long': 0 };
+		    pinlocations[2] = { 'lat': -83.75, 'long': 171};
+		    pinlocations[3] = { 'lat': -77.5, 'long': 168};
 		    for (var i = 0; i < pinlocations.length; i++) {
-			if (pinlocations[i].y < 0) { pinlocations[i].y = pinlocations + 360; }
-			distance = Math.sqrt(pinlocations[i].x + 90) * 78.71;
-			pinlocations[i].x = Math.round(500 + Math.sin(pinlocations[i].y+90) * distance);
-			pinlocations[i].y = Math.round(500 - Math.cos(pinlocations[i].y+90) * distance);
+			distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1096.45879733;
+			pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
+					      y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
 		    }
-		    for (var i = 0; i < pinlocations.length; i++) {
+		    for (var i = 0; i < pincoordinates.length; i++) {
 			if (i > 0) {
 			    context.beginPath();
-			    context.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
-			    context.lineTo(pinlocations[i].x, pinlocations[i].y);
+			    context.moveTo(pincoordinates[i - 1].x, pincoordinates[i - 1].y);
+			    context.lineTo(pincoordinates[i].x, pincoordinates[i].y);
 			    context.strokeStyle = "red";
 			    context.stroke();
 			}
-			context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pinlocations[i].x -10, pinlocations[i].y - 20,pinlocations[i].x + 10, pinlocations[i].y);
+			context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
 		    }
 		    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
 		});
