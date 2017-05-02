@@ -37,17 +37,17 @@ function addDistCalorieData(container, data) {
 }
 
 function addReducedMap(container,data) {
-    var x = 350;
-    var y = 350;
+    var x = 200;
+    var y = 200;
     if(data.locations.length != 0) {
 	var lat = data.locations[data.locations.length-1].lat;
 	var lon = data.locations[data.locations.length-1].long;
     
 	distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
-	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance) - 150;
-	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance) - 150;
-	x = Math.max(Math.min(x,700),0);
-	y = Math.max(Math.min(y,700),0);
+	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance) - 300;
+	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance) - 300;
+	x = Math.max(Math.min(x,400),0);
+	y = Math.max(Math.min(y,400),0);
     }
     var canvas = document.createElement('canvas');
     canvas.width = 300;
@@ -56,7 +56,7 @@ function addReducedMap(container,data) {
     var img = new Image;
     var ctx = canvas.getContext('2d');
     img.onload = function(){
-	ctx.drawImage(img,x,y,300,300,0,0,300,300);
+	ctx.drawImage(img,x,y,600,600,0,0,300,300);
     };
     img.src = "images/south_pole_points.png";
 }
