@@ -4,17 +4,14 @@ var basicAuth = require('basic-auth');
 var uuid = require('uuid/v4');
 var crypto = require('crypto');
 var fs = require('fs');
+var Canvas = require('canvas');
 var db = require('./db.js');
 var api = require('./api.js');
 
 var Request = require('tedious').Request;
 var TYPES = require('tedious').TYPES;
 
-fs.readFile('static/images/south_pole.jpg', (err, data) => {
-  if (err) throw err;
-    else fs.writeFile('static/images/south_temp.jpg', data,(err) => {
-    });
-});
+
 
 function getLog(req, res) {
     res.send(db.getLog());
@@ -333,6 +330,50 @@ function resetDailyTables(user,next) {
 		    connection.execSql(request);
 		}
 	    });
+	    var canvas = new Canvas(1000,1000);
+
+	    var context = canvas.getContext("2d");
+
+	    fs.readFile('static/images/south_pole.jpg', function(err, back){
+		if (err) throw err;
+		img = new Canvas.Image;
+		img.src = back;
+		context.drawImage(img, 0, 0);
+		fs.readFile('static/images/pin.png', function(err, pin){
+		    if(err) throw err;
+		    pinimg = new Canvas.Image;
+		    pinimg.src = pin;
+		    var pinlocations = new Array
+		    // pinlocations has the coordinates for now
+		    var distance = 0;
+		    pinlocations[0] = { 'x': -72.21, 'y': 103 };
+		    pinlocations[1] = { 'x': -60.44, 'y': 81.44 };
+		    pinlocations[2] = { 'x': -90, 'y': 0 };
+		    for (var i = 0; i < pinlocations.length; i++) {
+			if (pinlocations[i].y < 0) { pinlocations[i].y = pinlocations + 360; }
+			distance = Math.sqrt(pinlocations[i].x + 90) * 78.71;
+			pinlocations[i].x = Math.round(500 + Math.sin(pinlocations[i].y+90) * distance);
+			pinlocations[i].y = Math.round(500 - Math.cos(pinlocations[i].y+90) * distance);
+		    }
+		    var ctx = canvas.getContext("2d");
+		    for (var i = 0; i < pinlocations.length; i++) {
+			if (i > 0) {
+			    ctx.beginPath();
+			    ctx.moveTo(pinlocations[i - 1].x, pinlocations[i - 1].y);
+			    ctx.lineTo(pinlocations[i].x, pinlocations[i].y);
+			    ctx.strokeStyle = "red";
+			    ctx.stroke();
+			}
+			context.drawImage(pinimg, pinlocations[i].x -10, pinlocations[i].y - 20);
+		    }
+		    canvas.toBuffer(function(err, buf){
+			if(err) throw err;
+			fs.writeFile('static/images/south_pole_points.png',buf,(err) => { if(err) throw err;});
+		    });
+		});
+	    });
+	    
+	    
 	}
     });
 }	    

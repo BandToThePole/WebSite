@@ -9,6 +9,7 @@
   "dependencies": {
     "basic-auth": "^1.1.0",
     "body-parser": "*",
+    "canvas": "^1.6.5",
     "express": "*",
     "express-handlebars": "^3.0.0",
     "tedious": "*",
