@@ -12,6 +12,15 @@ var Request = require('tedious').Request;
 var TYPES = require('tedious').TYPES;
 
 
+//Generate map on program creation
+console.log("Generating Map");
+data(undefined,undefined,'AntarcticDemo',function(err,data) {
+    if (err) console.log(err);
+    else{
+	console.log("Got Data");
+	generateMap(data);
+    }
+});
 
 function getLog(req, res) {
     res.send(db.getLog());
@@ -236,6 +245,42 @@ function auth(req,res,next) {
     });
 }
 
+function generateMap(data) {
+    var canvas = PImage.make(1000,1000);
+
+    var context = canvas.getContext("2d");
+
+    fs.readFile('static/images/south_pole.jpg', function(err, back){
+	if (err) throw err;
+	img = PImage.decodeJPEG(back);
+	context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
+	PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
+	    var pinlocations = []
+	    var pincoordinates = []
+	    data.locations.forEach(function(location) {
+		pinlocations.push(location);
+	    });
+	    var distance = 0;
+	    for (var i = 0; i < pinlocations.length; i++) {
+		distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
+		pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
+				      y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
+	    }
+	    for (var i = 0; i < pincoordinates.length; i++) {
+		if (i > 0) {
+		    context.beginPath();
+		    context.moveTo(pincoordinates[i - 1].x, pincoordinates[i - 1].y);
+		    context.lineTo(pincoordinates[i].x, pincoordinates[i].y);
+		    context.strokeStyle = "red";
+		    context.stroke();
+		}
+		context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
+	    }
+	    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
+	});
+    });
+}
+
 // The largest value for each day (uses UTC) is used. The first data point has
 // to be excluded so that we have a baseline. The function returns an array of {
 // date, value } objects
@@ -331,39 +376,7 @@ function resetDailyTables(user,next) {
 		}
 	    });
 	    if(user == "AntarcticDemo"){
-		var canvas = PImage.make(1000,1000);
-
-		var context = canvas.getContext("2d");
-
-		fs.readFile('static/images/south_pole.jpg', function(err, back){
-		    if (err) throw err;
-		    img = PImage.decodeJPEG(back);
-		    context.drawImage(img, 0, 0,1000,1000,0,0,1000,1000);
-		    PImage.decodePNG(fs.createReadStream('static/images/pin.png'), function(pinimg){
-			var pinlocations = []
-			var pincoordinates = []
-			ret.locations.forEach(function(location) {
-			    pinlocations.push(location);
-			});
-			var distance = 0;
-			for (var i = 0; i < pinlocations.length; i++) {
-			    distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
-			    pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
-						  y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
-			}
-			for (var i = 0; i < pincoordinates.length; i++) {
-			    if (i > 0) {
-				context.beginPath();
-				context.moveTo(pincoordinates[i - 1].x, pincoordinates[i - 1].y);
-				context.lineTo(pincoordinates[i].x, pincoordinates[i].y);
-				context.strokeStyle = "red";
-				context.stroke();
-			    }
-			    context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
-			}
-			PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
-		    });
-		});
+		generateMap(ret);
 	    }
 	    
 	}
