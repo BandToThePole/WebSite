@@ -7,6 +7,7 @@ var pinInfobox;
 function drawSouthPole(container, title) {
 
     var div = document.createElement('div');
+    div.classList.add('graph-container');
     div.classList.add('SouthPoleMap');
     var header = document.createElement('h2');
     header.textContent = title;
