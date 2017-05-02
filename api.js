@@ -3,11 +3,18 @@ const zlib = require('zlib');
 var basicAuth = require('basic-auth');
 var uuid = require('uuid/v4');
 var crypto = require('crypto');
+var fs = require('fs');
 var db = require('./db.js');
 var api = require('./api.js');
 
 var Request = require('tedious').Request;
 var TYPES = require('tedious').TYPES;
+
+fs.readFile('static/images/south_pole.jpg', (err, data) => {
+  if (err) throw err;
+    else fs.writeFile('static/images/south_temp.jpg', data,(err) => {
+    });
+});
 
 function getLog(req, res) {
     res.send(db.getLog());
