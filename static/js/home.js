@@ -96,9 +96,6 @@ function fillDetails(data) {
 	data.heart_rates.slice(-10).forEach((x) => {sum += x.bpm});
 	heartratePrint = (sum / 10) + " bpm";
     }
-    console.log(caloriePrint);
-    console.log(distancePrint);
-    console.log(heartratePrint);
     document.getElementById('calories').innerHTML = caloriePrint;
     document.getElementById('distance').innerHTML = distancePrint;
     document.getElementById('heartrate').innerHTML = heartratePrint;
