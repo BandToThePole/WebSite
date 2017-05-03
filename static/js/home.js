@@ -1,7 +1,7 @@
 //display the 20 most recent entries
 function addHeartRateData(container, data) {
     var heartRateValues = [], heartRateTimes = [];
-    var start = Math.max(data["heart_rates"].length - 30, 0);
+    var start = Math.max(data["heart_rates"].length - 20, 0);
     for (var i = start; i < data["heart_rates"].length; i++) {
         var datum = data["heart_rates"][i];
         heartRateValues.push(datum.bpm);
@@ -11,16 +11,14 @@ function addHeartRateData(container, data) {
 }
 //5 most recent entries
 function addCalorieData(container, data) {
-    var start = Math.max(data["daily_calories"].length - 5, 0);
-    var labels = data["daily_calories"].slice(start).map(function(datum) { return shortDate(new Date(datum.date)) });
-    var values = data["daily_calories"].slice(start).map(function(datum) { return datum.kcalcount });
+    var labels = data["daily_calories"].slice(-5).map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_calories"].slice(-5).map(function(datum) { return datum.kcalcount });
     createBarChart(container, "Calories", labels, values, 'Calories (kcal)');
 }
 //5 most recent entries
 function addDistanceData(container, data) {
-    var start = Math.max(data["daily_distances"].length - 5, 0);
-    var labels = data["daily_distances"].slice(start).map(function(datum) { return shortDate(new Date(datum.date)) });
-    var values = data["daily_distances"].slice(start).map(function(datum) { return datum.distance/100 /*Convert from centimeters to meters*/ });
+    var labels = data["daily_distances"].slice(-5).map(function(datum) { return shortDate(new Date(datum.date)) });
+    var values = data["daily_distances"].slice(-5).map(function(datum) { return datum.distance/100 /*Convert from centimeters to meters*/ });
     createBarChart(container, "Distances", labels, values, 'Distance Traveled (m)' );
 }
 //5 most recent entries
@@ -37,6 +35,7 @@ function addDistCalorieData(container, data) {
 }
 
 function addReducedMap(container,data) {
+    var toPrint = ""
     var x = 200;
     var y = 200;
     if(data.locations.length != 0) {
@@ -48,7 +47,11 @@ function addReducedMap(container,data) {
 	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance) - 300;
 	x = Math.max(Math.min(x,400),0);
 	y = Math.max(Math.min(y,400),0);
+
+	toPrint = Math.round((90 + lat)/180 * Math.PI * 6356.7523) + " Km"
     }
+    else toPrint = "Expedition has not started";
+    document.getElementById('distanceleft').innerHTML = toPrint
     var canvas = document.createElement('canvas');
     canvas.width = 300;
     canvas.height = 300;
@@ -61,9 +64,53 @@ function addReducedMap(container,data) {
     img.src = "images/south_pole_points.png";
 }
 
+function startTimer() {
+    var today = new Date();
+    var h = today.getUTCHours();
+    var m = today.getUTCMinutes();
+    var s = today.getUTCSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('time').innerHTML =
+    h + ":" + m + ":" + s;
+    var t = setTimeout(startTimer, 500);
+}
+    
+function checkTime(i) {
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
+
+function fillDetails(data) {
+    var caloriePrint = ""
+    var distancePrint = ""
+    var heartratePrint = ""
+    if (data.daily_calories.length == 0) {caloriePrint = "No Calorie Data";}
+    else {caloriePrint = data.daily_calories[data.daily_calories.length - 1].kcalcount + " kcal";}
+    if (data.daily_distances.length == 0) {distancePrint = "No Distance Data";}
+    else {distancePrint = data.daily_distances[data.daily_distances.length - 1].distance/100 + " km";}
+    // average last 10 values
+    if (data.heart_rates.length < 10){ heartratePrint = "Not enough data";}
+    else {
+	var sum = 0
+	data.heart_rates.slice(-10).forEach((x) => {sum += x.bpm});
+	heartratePrint = (sum / 10) + " bpm";
+    }
+    console.log(caloriePrint);
+    console.log(distancePrint);
+    console.log(heartratePrint);
+    document.getElementById('calories').innerHTML = caloriePrint;
+    document.getElementById('distance').innerHTML = distancePrint;
+    document.getElementById('heartrate').innerHTML = heartratePrint;
+
+    
+}
+
 function showGraphs(data) {
     var container = document.getElementById("graphs-container");
     empty(container);
+    startTimer();
+    fillDetails(data);
     addHeartRateData(container, data);
     //addCalorieData(container, data);
     //addDistanceData(container, data);
