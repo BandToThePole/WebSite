@@ -257,13 +257,18 @@ function generateMap(data) {
 	    var pinlocations = []
 	    var pincoordinates = []
 	    data.locations.forEach(function(location) {
-		pinlocations.push(location);
+		//filter out locations above equator
+		if(location.lat < 0){
+		    pinlocations.push(location);
+		}
 	    });
 	    var distance = 0;
 	    for (var i = 0; i < pinlocations.length; i++) {
 		distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
-		pincoordinates[i] = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
-				      y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
+		coord = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
+			  y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
+		if(0 <= x && x <= 1000 && 0 <= y && y <= 1000){//Only use points that fit on the map
+		    pincoordinates.push(coord);
 	    }
 	    for (var i = 0; i < pincoordinates.length; i++) {
 		if (i > 0) {
