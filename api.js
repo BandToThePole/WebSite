@@ -45,19 +45,19 @@ function makeUUID(session) {
 
 function generateString(Columns,table,user) {
     if (typeof user == 'undefined') {
-        return "SELECT " + Columns + " FROM " + table + " ORDER BY time WHERE time BETWEEN @start AND @end";
+        return "SELECT " + Columns + " FROM " + table + " WHERE time BETWEEN @start AND @end ORDER BY time";
     }
     else {
-        return "SELECT " + Columns + " FROM " + table + " INNER JOIN Sessions ON " + table + ".Session = Sessions.SessionID ORDER BY time WHERE time BETWEEN @start AND @end AND USERNAME=@user";
+        return "SELECT " + Columns + " FROM " + table + " INNER JOIN Sessions ON " + table + ".Session = Sessions.SessionID WHERE time BETWEEN @start AND @end AND USERNAME=@user ORDER BY time";
     }
 }
 
 function generateDailyString(Columns,table,user) {
     if (typeof user == 'undefined') {
-        return "SELECT " + Columns + " FROM " + table + " ORDER BY time";
+        return "SELECT " + Columns + " FROM " + table + " ORDER BY date";
     }
     else {
-        return "SELECT " + Columns + " FROM " + table + " ORDER BY time WHERE USERNAME=@user";
+        return "SELECT " + Columns + " FROM " + table + " WHERE USERNAME=@user ORDER BY date";
     }
 }
 
@@ -267,7 +267,7 @@ function generateMap(data) {
 		distance = Math.sin((90 + pinlocations[i].lat)/180 * Math.PI) * 1114.10909837;
 		coord = { x: Math.round(500 + Math.sin(pinlocations[i].long /180 * Math.PI) * distance),
 			  y: Math.round(500 - Math.cos(pinlocations[i].long /180 * Math.PI) * distance)};
-		if(0 <= x && x <= 1000 && 0 <= y && y <= 1000){//Only use points that fit on the map
+		if(0 <= coord.x && coord.x <= 1000 && 0 <= coord.y && coord.y <= 1000){//Only use points that fit on the map
 		    pincoordinates.push(coord);
 		}
 	    }
