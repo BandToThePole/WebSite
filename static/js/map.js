@@ -1,4 +1,4 @@
-function createMap(mapContainerID, refreshButtonID) {
+function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialScale) {
     var mapContainer = document.getElementById(mapContainerID);
     var mapBox = document.createElement('div');
     mapBox.classList.add('map');
@@ -6,20 +6,22 @@ function createMap(mapContainerID, refreshButtonID) {
     mapBox.appendChild(mapImage);
     mapContainer.appendChild(mapBox);
 
-    var currentScale = 1, currentX = 0, currentY = 0;
+    var currentScale = initialScale, currentX = initialX, currentY = initialY;
     var mouseIsDown = false, lastX, lastY;
+    console.log(initialX,initialY,initialScale);
+    function setTransform() {
+	x=mapBox.offsetWidth/2 - currentX;
+	y=mapBox.offsetHeight/2 - currentY;
+	c = currentScale;
 
-    function setTransform(scale, translateX, translateY) {
-        var transform = "translate(" + translateX.toString() + "px, " + translateY.toString() + "px) " +
-                        "scale(" + scale.toString() + ")";
+        var transform = "matrix("+c+",0,0,"+c+","+(x + (mapImage.offsetWidth/2-currentX)*(c-1)) +","+(y + (mapImage.offsetHeight/2-currentY)*(c-1))+")";
+
         mapImage.style.transform = transform;
-        currentScale = scale;
-        currentX = translateX;
-        currentY = translateY;
     }
 
     mapImage.onload = function () {
-        setTransform(1, 0, 0);
+	boundXY();
+        setTransform();
         mouseIsDown = false;
     };
 
@@ -31,6 +33,11 @@ function createMap(mapContainerID, refreshButtonID) {
         }
     });
 
+    function boundXY() {
+	currentX = bound(currentX,mapBox.offsetWidth/(2*currentScale),mapImage.offsetWidth -mapBox.offsetWidth/(2*currentScale));
+	currentY = bound(currentY,mapBox.offsetHeight/(2*currentScale),mapImage.offsetHeight -mapBox.offsetHeight/(2*currentScale));
+    }
+
     function mouseMoveOrUp(e) {
         if (mouseIsDown) {
             var x = e.pageX - mapBox.offsetLeft;
@@ -38,9 +45,10 @@ function createMap(mapContainerID, refreshButtonID) {
             var deltaX = x - lastX;
             var deltaY = y - lastY;
             // Represent the approximate bounds of Antarctica within the image
-            var tx = Math.min(mapImage.offsetWidth * 0.4 * currentScale, Math.max(currentX + deltaX, -mapImage.offsetWidth * 0.5 * currentScale));
-            var ty = Math.min(mapImage.offsetHeight * 0.3 * currentScale, Math.max(currentY + deltaY, -mapImage.offsetHeight * 0.45 * currentScale));
-            setTransform(currentScale, tx, ty);
+            currentX -= deltaX/currentScale;
+	    currentY -= deltaY/currentScale;
+	    boundXY();
+            setTransform();
             lastX = x;
             lastY = y;
         }
@@ -54,14 +62,9 @@ function createMap(mapContainerID, refreshButtonID) {
     mapBox.addEventListener('mouseleave', function() { mouseIsDown = false; });
 
     function scroll(e) {
-        var newScale = Math.max(0.5, Math.min(2, currentScale * Math.pow(1.1, -e.wheelDelta / 40)));
-        var cx = (mapImage.offsetWidth / 2 + currentX);
-        var cy = (mapImage.offsetHeight / 2 + currentY);
-        var x = ((e.pageX - mapBox.offsetLeft) - cx) / currentScale;
-        var y = ((e.pageY - mapBox.offsetTop) - cy)  / currentScale;
-        // Handles change of coordinate system to ensure map stays centered
-        // around cursor
-        setTransform(newScale, currentX + x * (currentScale - newScale), currentY + y * (currentScale - newScale));
+        currentScale = bound(currentScale * Math.pow(1.1, -e.wheelDelta / 100),0.5,2);
+        boundXY();
+	setTransform();
         e.preventDefault();
     }
 
@@ -82,6 +85,8 @@ function createMap(mapContainerID, refreshButtonID) {
     }
 }
 
-onready(function() {
-    createMap("map-container", "refresh-link");
-});
+function bound(x,low,high) {
+    return Math.max(Math.min(x,high),low);
+}
+
+

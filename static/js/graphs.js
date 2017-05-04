@@ -101,4 +101,5 @@ function refresh() {
 onready(function() {
     linkClick("refresh-link", refresh);
     refresh();
+    createMap("map-container", "refresh-link",500,500,1);
 });

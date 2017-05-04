@@ -1,3 +1,5 @@
+var mapMade = false
+
 //display the 20 most recent entries
 function addHeartRateData(container, data) {
     var heartRateValues = [], heartRateTimes = [];
@@ -35,33 +37,7 @@ function addDistCalorieData(container, data) {
 }
 
 function addReducedMap(container,data) {
-    var toPrint = ""
-    var x = 200;
-    var y = 200;
-    if(data.locations.length != 0) {
-	var lat = data.locations[data.locations.length-1].lat;
-	var lon = data.locations[data.locations.length-1].long;
     
-	distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
-	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance) - 300;
-	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance) - 300;
-	x = Math.max(Math.min(x,400),0);
-	y = Math.max(Math.min(y,400),0);
-
-	toPrint = Math.round((90 + lat)/180 * Math.PI * 6356.7523) + " Km"
-    }
-    else toPrint = "Expedition has not started";
-    document.getElementById('distanceleft').innerHTML = toPrint
-    var canvas = document.createElement('canvas');
-    canvas.width = 300;
-    canvas.height = 300;
-    container.appendChild(canvas);
-    var img = new Image;
-    var ctx = canvas.getContext('2d');
-    img.onload = function(){
-	ctx.drawImage(img,x,y,600,600,0,0,300,300);
-    };
-    img.src = "images/south_pole_points.png";
 }
 
 function startTimer() {
@@ -112,13 +88,29 @@ function showGraphs(data) {
     //addCalorieData(container, data);
     //addDistanceData(container, data);
     //addDistCalorieData(container, data);
-    get("/api/data?user=AntarcticDemo", showMap);
+    get("/api/data?user=AntarcticDemo", setDistances);
 }
 
-function showMap(data) {
-    var mapContainer = document.getElementById("map-container");
-    empty(mapContainer)
-    addReducedMap(mapContainer,data);
+function setDistances(data) {
+    var toPrint = ""
+    var x = 500;
+    var y = 500;
+    if(data.locations.length != 0) {
+	var lat = data.locations[data.locations.length-1].lat;
+	var lon = data.locations[data.locations.length-1].long;
+    
+	distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
+	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance);
+	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance);
+
+	toPrint = Math.round((90 + lat)/180 * Math.PI * 6356.7523) + " Km"
+    }
+    else toPrint = "Expedition has not started";
+    document.getElementById('distanceleft').innerHTML = toPrint;
+    if(!mapMade){
+	mapMade = true;
+	createMap('map-container','refresh-link',x,y,1.3);
+    }
 }
 
 function refresh() {

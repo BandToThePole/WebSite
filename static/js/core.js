@@ -55,4 +55,3 @@ function shortDate(d) {
     return d.toLocaleDateString('en-GB', opts);
 }
 
-
