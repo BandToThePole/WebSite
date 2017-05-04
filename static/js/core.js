@@ -6,6 +6,11 @@ function get(path, callback) {
             var data = JSON.parse(req.responseText);
             callback(data);
         }
+        else if(path == "/api/data" && req.status == 0) {
+            var container = document.getElementById("bad-response-container");
+            empty(container);
+            container.innerHTML = "Loading data...";
+        }
         else if(path == "/api/data" && req.status == 500){
             var container = document.getElementById("bad-response-container");
             empty(container);
