@@ -76,6 +76,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
 
     var currentTouchLocations = {};
     var meanTouch;
+    var touchDistance;
 
     function averageXY() {
         var x = 0;
@@ -91,6 +92,16 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
         return { x: x, y: y};
     }
 
+    function computeTouchDistance() {
+        var ids = Object.keys(currentTouchLocations);
+        if (ids.length >= 2) {
+            var dx = currentTouchLocations[ids[0]].x - currentTouchLocations[ids[1]].x;
+            var dy = currentTouchLocations[ids[0]].y - currentTouchLocations[ids[1]].y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        return 0;
+    }
+
     // Touch handling is reasonably similar to mouse tracking
     mapBox.addEventListener('touchstart', function(e) {
         var touches = e.changedTouches;
@@ -99,6 +110,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
             currentTouchLocations[touch.identifier] = { x: touch.pageX - mapBox.offsetLeft, y: touch.pageY - mapBox.offsetTop };
         }
         meanTouch = averageXY();
+        touchDistance = computeTouchDistance();
     });
 
     var touchEndOrCancel = function(e) {
@@ -108,6 +120,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
         }
         if (Object.keys(currentTouchLocations).length > 0) {
             meanTouch = averageXY();
+            touchDistance = computeTouchDistance();
         }
     };
     mapBox.addEventListener('touchend', touchEndOrCancel);
@@ -128,6 +141,14 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
         boundXY();
         setTransform();
         meanTouch = xy;
+        if (Object.keys(currentTouchLocations).length >= 2) {
+            var newTouchDistance = computeTouchDistance();
+            var sf = newTouchDistance / touchDistance;
+            touchDistance = newTouchDistance;
+            currentScale = Math.max(0.5, Math.min(2, currentScale * sf));
+            boundXY();
+            setTransform();
+        }
     });
 
 
