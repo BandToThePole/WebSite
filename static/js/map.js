@@ -85,23 +85,18 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
             lastY = e.pageY - mapBox.offsetTop;
         }
     });
-    mapBox.addEventListener('touchend', function(e) {
+    var touchEndOrCancel = function(e) {
         if (e.identifier == currentTouch) {
             currentTouch = null;
             mouseIsDown = false;
             mouseMoveOrUp(e);
         }
-    });
+    };
+    mapBox.addEventListener('touchend', touchEndOrCancel);
+    mapBox.addEventListener('touchcancel', touchEndOrCancel);
     mapBox.addEventListener('touchmove', function(e) {
         if (e.identifier == currentTouch) {
             e.preventDefault();
-            mouseMoveOrUp(e);
-        }
-    });
-    mapBox.addEventListener('touchcancel', function(e) {
-        if (e.identifier == currentTouch) {
-            currentTouch = null;
-            mouseIsDown = false;
             mouseMoveOrUp(e);
         }
     });
