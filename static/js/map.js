@@ -138,17 +138,15 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
         // Represent the approximate bounds of Antarctica within the image
         currentX -= deltaX/currentScale;
         currentY -= deltaY/currentScale;
-        boundXY();
-        setTransform();
         meanTouch = xy;
         if (Object.keys(currentTouchLocations).length >= 2) {
             var newTouchDistance = computeTouchDistance();
             var sf = newTouchDistance / touchDistance;
             touchDistance = newTouchDistance;
             currentScale = Math.max(0.5, Math.min(2, currentScale * sf));
-            boundXY();
-            setTransform();
         }
+        boundXY();
+        setTransform();
     });
 
 
