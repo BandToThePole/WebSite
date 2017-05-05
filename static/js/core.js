@@ -3,7 +3,7 @@ function get(path, callback) {
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState == XMLHttpRequest.DONE && req.status == 200) {
-	    empty(document.getElementById("bad-response-container"));
+            empty(document.getElementById("bad-response-container"));
             var data = JSON.parse(req.responseText);
             callback(data);
         }

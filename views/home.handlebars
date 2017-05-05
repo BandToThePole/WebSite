@@ -1,44 +1,99 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"
         crossorigin="anonymous"></script>
-<div class="container">
-    <div class="row">
-        <h1>Band to the Pole</h1>
-        <h4>Follow James Redden's trip to the South pole. In late 2017 he intends to ski across the Antarctic to raise money for Soundabout, a British charity that provides therapy for disabled children and adults. In this website you can see his latest locations and distances travelled, how much calories he burns and how fast his heart beats, using data gathered by a Microsoft Band. To find out more about him, check his <a href="http://www.jamesredden.co.uk/">website</a>. </h4>
-    </div>
-    <div class="row">
-        <!-- This is a 3 column layout using Bootstrap
-        http://getbootstrap.com/css/#grid  -->
+<div id="homeContainer" class="container">
+
+    <div id="homeRow" class="row">
         <div class="col-md-4">
-            <h2>Latest stats</h2>
-            <h4>Current UTC Time</h4>
-	    <strong id="time"></strong>
-	    <h4>Distance to South Pole</h4>
-	    <strong id="distanceleft"></strong>
-	    <h4>Distance covered yesterday</h4>
-	    <strong id="distance"></strong>
-	    <h4>Calories burnt yesterday</h4>
-	    <strong id="calories"></strong>
-	    <h4>Average Heart Rate</h4>
-	    <strong id="heartrate"></strong>
-	    
+            <img id="portrait" src="/images/Frame.png" />
+
         </div>
-        <div id="home-graphs" class="col-md-4">
-            <h2>Latest graphs</h2>
-            <p><a href="#" id="refresh-link">Refresh</a></p>
-	    <div id="map-container" class="map-container"></div>
+        <div class="col-md-8" style="padding-right:10em;">
+
+            <h2 style="margin-bottom:40px; margin-top:0px; ">Follow James Redden's journey to the South pole. </h2>
+
+            <h3>
+                In late 2017 he intends to ski across the Antarctic to raise money for Soundabout, a British charity that provides therapy for disabled children and adults. In this website you can see his latest locations and distances travelled, how much calories he burns and how fast his heart beats, using data gathered by a Microsoft Band. To find out more about him, check his
+                <a id="websiteLink" href="http://www.jamesredden.co.uk/"> &nbsp  website   &nbsp </a>.
+            </h3>
+
+        </div>
+    </div>
+    <hr />
+    <div>
+        <div id="homeTableRow" class="row">
+            <h1 style="width:100%; margin-bottom:2em; margin-top:0px;font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center;">
+                Latest stats
+
+                <a href="#"><img id="refresh-link" src="/images/refresh.png" /> </a>
+            </h1>
+            <!-- This is a 3 column layout using Bootstrap
+            http://getbootstrap.com/css/#grid  -->
+            <div class="col-md-1"></div>
+            <div id="home-graphs" class="col-md-4" style="padding-top:0; padding-left:0; padding-right:1em;">
+
+
+                <div id="map-container" class="map-container">
+                </div>
+
+            </div>
+            
+
+            <div class="col-md-6" style="padding-left:2em;">
+                <div id="graphs-container">
+                </div>
+
+            </div>
             <div id="bad-response-container"></div>
-            <div id="graphs-container"></div>
-	    <script src="/js/graphfunc.js"></script>
-            <script src="/js/home.js"></script>
-	    <script src="/js/map.js"></script>
+
+
+
+
+            <table>
+                <!--<tr style="background-color:gray">
+                    <td ></td>
+                    <td ></td>
+
+                </tr>-->
+                <tr>
+                    <td>Current UTC Time</td>
+                    <th><strong id="time"></strong></th>
+                </tr>
+                <tr>
+                    <td>Distance to South Pole</td>
+                    <td><strong id="distanceleft"></strong></td>
+
+                </tr>
+                <tr>
+                    <td>Distance covered yesterday</td>
+                    <td><strong id="distance"></strong></td>
+
+                </tr>
+                <tr>
+                    <td>Calories burnt yesterday</td>
+                    <td><strong id="calories"></strong></td>
+
+                </tr>
+                <tr>
+                    <td>Average Heart Rate</td>
+                    <td><strong id="heartrate"></strong></td>
+
+                </tr>
+            </table>
         </div>
-        <div class="col-md-4">
-            <h2>Latest tweets</h2>
-            <a class="twitter-timeline" data-height="500" href="https://twitter.com/jredden">
-                Tweets by jredden
-            </a>
-            <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-        
+
+
     </div>
+    <hr />
+
+
+    <div class="row" style="margin-left:2em; margin-right:2em;">
+        <h1 style="font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center; margin-bottom:2em; margin-top:0;">Latest tweets</h1>
+        <a class="twitter-timeline" data-height="500" href="https://twitter.com/jredden">
+            Tweets by jredden
+        </a>
+        <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <script src="/js/graphfunc.js"></script>
+    <script src="/js/home.js"></script>
+    <script src="/js/map.js"></script>
 </div>

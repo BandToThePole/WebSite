@@ -37,7 +37,7 @@ function addDistCalorieData(container, data) {
 }
 
 function addReducedMap(container,data) {
-    
+
 }
 
 function startTimer() {
@@ -48,10 +48,10 @@ function startTimer() {
     m = checkTime(m);
     s = checkTime(s);
     document.getElementById('time').innerHTML =
-    h + ":" + m + ":" + s;
+        h + ":" + m + ":" + s;
     var t = setTimeout(startTimer, 500);
 }
-    
+
 function checkTime(i) {
     if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
     return i;
@@ -68,15 +68,15 @@ function fillDetails(data) {
     // average last 10 values
     if (data.heart_rates.length < 10){ heartratePrint = "Not enough data";}
     else {
-	var sum = 0
-	data.heart_rates.slice(-10).forEach((x) => {sum += x.bpm});
-	heartratePrint = (sum / 10) + " bpm";
+        var sum = 0
+        data.heart_rates.slice(-10).forEach((x) => {sum += x.bpm});
+        heartratePrint = (sum / 10) + " bpm";
     }
     document.getElementById('calories').innerHTML = caloriePrint;
     document.getElementById('distance').innerHTML = distancePrint;
     document.getElementById('heartrate').innerHTML = heartratePrint;
 
-    
+
 }
 
 function showGraphs(data) {
@@ -96,20 +96,20 @@ function setDistances(data) {
     var x = 500;
     var y = 500;
     if(data.locations.length != 0) {
-	var lat = data.locations[data.locations.length-1].lat;
-	var lon = data.locations[data.locations.length-1].long;
-    
-	distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
-	x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance);
-	y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance);
+        var lat = data.locations[data.locations.length-1].lat;
+        var lon = data.locations[data.locations.length-1].long;
 
-	toPrint = Math.round((90 + lat)/180 * Math.PI * 6356.7523) + " Km"
+        distance = Math.sin((90 + lat)/180 * Math.PI) * 1114.10909837;
+        x = Math.round(500 + Math.sin(lon /180 * Math.PI) * distance);
+        y = Math.round(500 - Math.cos(lon /180 * Math.PI) * distance);
+
+        toPrint = Math.round((90 + lat)/180 * Math.PI * 6356.7523) + " Km"
     }
     else toPrint = "Expedition has not started";
     document.getElementById('distanceleft').innerHTML = toPrint;
     if(!mapMade){
-	mapMade = true;
-	createMap('map-container','refresh-link',x,y,1.3);
+        mapMade = true;
+        createMap('map-container','refresh-link',x,y,1.3);
     }
 }
 

@@ -3,11 +3,13 @@ function createChart(container, title) {
     div.classList.add('graph-container');
     var header = document.createElement('h2');
     header.textContent = title;
+    header.className = "graphHeader";
     div.appendChild(header);
     container.appendChild(div);
 
     var canvas = document.createElement('canvas');
-    canvas.width = 400;
+    canvas.className = "graphCanvas";
+    canvas.width = 450;
     canvas.height = 300;
     div.appendChild(canvas);
 
@@ -19,7 +21,7 @@ function createScatterChart(container, title, xAxis, yAxis) {
 
     var xyData = [];
     for (var i = 0; i < Math.min(xAxis.length, yAxis.length); i++) {
-        xyData.push({x: xAxis[i], y: yAxis[i]});
+        xyData.push({ x: xAxis[i], y: yAxis[i] });
     }
 
     var chart = new Chart(canvas, {
@@ -39,7 +41,7 @@ function createScatterChart(container, title, xAxis, yAxis) {
             },
             tooltips: {
                 callbacks: {
-                    title: function(tooltip, data) {
+                    title: function (tooltip, data) {
                         var d = new Date(tooltip[0].xLabel);
                         var opts = {
                             year: 'numeric',
@@ -58,7 +60,7 @@ function createScatterChart(container, title, xAxis, yAxis) {
                     position: 'bottom',
                     ticks: {
                         beginAtZero: false,
-                        callback: function(value) {
+                        callback: function (value) {
                             return (new Date(value)).toLocaleDateString();
                         }
                     }
@@ -79,7 +81,7 @@ function createScatterDCChart(container, title, xAxis, yAxis) {
 
     var xyData = [];
     for (var i = 0; i < Math.min(xAxis.length, yAxis.length); i++) {
-        xyData.push({x: xAxis[i], y: yAxis[i]});
+        xyData.push({ x: xAxis[i], y: yAxis[i] });
     }
 
     var chart = new Chart(canvas, {
@@ -99,18 +101,18 @@ function createScatterDCChart(container, title, xAxis, yAxis) {
             },
             tooltips: {
                 callbacks: {
-                    title: function(tooltip, data, labels) {
-                        var str = "Distance: "+ tooltip[0].xLabel.toString() + "m";
+                    title: function (tooltip, data, labels) {
+                        var str = "Distance: " + tooltip[0].xLabel.toString() + "m";
                         return str;
                     }
                 }
             },
             scales: {
                 xAxes: [{
-                    scaleLabel : {
-                        display : true,
-                        labelString : "Distance traveled (m)",
-                        fontSize : 20
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Distance traveled (m)",
+                        fontSize: 20
                     },
                     type: 'linear',
                     position: 'bottom',
@@ -119,10 +121,10 @@ function createScatterDCChart(container, title, xAxis, yAxis) {
                     }
                 }],
                 yAxes: [{
-                    scaleLabel : {
-                        display : true,
-                        labelString : "Calories (kcal)",
-                        fontSize : 20
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Calories (kcal)",
+                        fontSize: 20
                     },
                     ticks: {
                         beginAtZero: true
@@ -133,7 +135,7 @@ function createScatterDCChart(container, title, xAxis, yAxis) {
     });
 }
 
-function createBarChart(container, title, labels, values,yaxislabel) {
+function createBarChart(container, title, labels, values, yaxislabel) {
     var canvas = createChart(container, title);
     var chart = new Chart(canvas, {
         type: "bar",
@@ -150,11 +152,11 @@ function createBarChart(container, title, labels, values,yaxislabel) {
             },
             scales: {
                 yAxes: [{
-		    scaleLabel : {
-			display : true,
-			labelString : yaxislabel,
-			fontSize : 20
-		    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: yaxislabel,
+                        fontSize: 20
+                    },
                     ticks: {
                         beginAtZero: true
                     }

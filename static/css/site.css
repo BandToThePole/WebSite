@@ -28,21 +28,62 @@ footer {
     text-align: center;
 }
 
-.graph-container, .map-container {
+.map-container {
     text-align: center;
     margin: auto;
+    padding-bottom: 50px;
+}
+@media (max-width: 980px) {
+    #bandPhoto {
+        display: none;
+    }
+
+    #portrait {
+        width: 200px !important;
+        height: 200px !important;
+    }
+    #map {
+        max-height:300px;
+        max-width:300px;
+    }
 }
 
+@media (max-width: 440px) {
+    #portrait {
+        width: 100px !important;
+        height: 100px !important;
+    }
+}
+
+#portrait {
+    width: 250px;
+    height: 250px
+}
+
+@media (max-width: 480px) {
+}
+
+#portrait {
+    height: 250px;
+    width: 250px;
+    float: right;
+}
 .map-container {
     max-width: 500px;
 }
 
-.graph-container canvas, .map-container .map {
+#homeCanvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.map-container canvas, .map-container .map {
     border: 1px solid black;
     /*max-width: 50%; /* TODO: Adapt for mobile */
-    margin: auto;
+    margin: 0 0 0 0;
     display: block;
 }
+
 
 .map-container .map {
     /* Ensures that the map appears square
@@ -54,6 +95,149 @@ footer {
     background-color: #000032; /* same as sea */
 }
 
-.map-container .map img {
-    /*width:200%;*/
+    .map-container .map img {
+        /*width:200%;*/
+    }
+
+a {
+    transition: all 0.35s;
+}
+
+.navbar-nav {
+    float: right;
+}
+
+#navbar {
+    text-align: center;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: white !important
+}
+
+.navbar-inverse .navbar-nav > .active > a {
+    background-color: black !important;
+    border: medium !important;
+    border-radius: 0px !important;
+}
+
+.navbar-inverse .navbar-nav > li > a:not(.active):hover {
+    background-color: #b1b1b1 !important;
+    border: medium !important;
+    border-radius: 0px !important;
+    color: black !important;
+    font: 14px !important
+}
+
+#websiteLink {
+    background-color: rgba(178, 182, 229,0.5);
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.navbar-inverse {
+    background: gray none repeat scroll 0 0 !important;
+    border: solid none !important;
+    border-color: #656565;
+    border-radius: 0px !important;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    color: white !important;
+}
+
+    .navbar-brand:hover {
+        color: black !important;
+    }
+
+
+#bandPhoto {
+    height: 50px;
+    padding-left: 200px;
+}
+
+
+#generalContainer {
+    margin: 0 0 0 0;
+    margin-top: -50px;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    left: 0px;
+    right: 0px;
+    line-height: 26px;
+    width: 100%;
+}
+
+#homeContainer {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    width: 100%;
+    background-color: #ececec;
+}
+
+#homeRow {
+    margin: 0px 0px 0px 0px;
+    padding-top: 15%;
+    padding-bottom: 15%;
+    width: 100%;
+    background-image: url("/images/MountainsHQ.jpg");
+    background-repeat: no-repeat !important;
+    background-position: top;
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-position-x: 50%;
+    background-position-y: 0;
+    background-size: cover;
+}
+
+#homeTableRow {
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-bottom: 0;
+}
+
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+
+hr {
+    border-color: darkgray;
+    border-width: 0.1em;
+    margin-top: 5em;
+    margin-bottom: 5em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.graphHeader {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 1em;
+    padding-bottom: 50px;
+}
+
+.graphCanvas {
+    padding-bottom: 50px;
+}
+
+#refresh-link {
+    height: 30px;
+    width: 30px;
 }

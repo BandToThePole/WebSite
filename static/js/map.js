@@ -1,4 +1,4 @@
-function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialScale) {
+function createMap(mapContainerID, refreshButtonID, initialX, initialY, initialScale) {
     var mapContainer = document.getElementById(mapContainerID);
     var mapBox = document.createElement('div');
     mapBox.classList.add('map');
@@ -14,7 +14,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
         y=mapBox.offsetHeight/2 - currentY;
         c = currentScale;
 
-        var transform = "matrix("+c+",0,0,"+c+","+(x + (mapImage.offsetWidth/2-currentX)*(c-1)) +","+(y + (mapImage.offsetHeight/2-currentY)*(c-1))+")";
+        var transform = "matrix("+c+",0,0,"+c+","+(x + (mapImage.offsetWidth / 2 - currentX) * (c - 1)) + "," + (y + (mapImage.offsetHeight / 2 - currentY) * (c - 1)) + ")";
 
         mapImage.style.transform = transform;
     }
@@ -34,8 +34,8 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     });
 
     function boundXY() {
-        currentX = bound(currentX,mapBox.offsetWidth/(2*currentScale),mapImage.offsetWidth -mapBox.offsetWidth/(2*currentScale));
-        currentY = bound(currentY,mapBox.offsetHeight/(2*currentScale),mapImage.offsetHeight -mapBox.offsetHeight/(2*currentScale));
+        currentX = bound(currentX, mapBox.offsetWidth / (2 * currentScale), mapImage.offsetWidth - mapBox.offsetWidth / (2 * currentScale));
+        currentY = bound(currentY, mapBox.offsetHeight / (2 * currentScale), mapImage.offsetHeight - mapBox.offsetHeight / (2 * currentScale));
     }
 
     function mouseMoveOrUp(e) {
