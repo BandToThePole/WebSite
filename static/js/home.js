@@ -64,7 +64,7 @@ function fillDetails(data) {
     if (data.daily_calories.length == 0) {caloriePrint = "No Calorie Data";}
     else {caloriePrint = data.daily_calories[data.daily_calories.length - 1].kcalcount + " kcal";}
     if (data.daily_distances.length == 0) {distancePrint = "No Distance Data";}
-    else {distancePrint = data.daily_distances[data.daily_distances.length - 1].distance/100 + " km";}
+    else {distancePrint = data.daily_distances[data.daily_distances.length - 1].distance/100 + " m";}
     // average last 10 values
     if (data.heart_rates.length < 10){ heartratePrint = "Not enough data";}
     else {
