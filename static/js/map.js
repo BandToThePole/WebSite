@@ -74,6 +74,39 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     // Prevents being able to drag the image in some browsers (important)
     mapImage.ondragstart = function() { return false; };
 
+    var currentTouch = null;
+
+    // Touch handling is reasonably similar to mouse tracking
+    mapBox.addEventListener('touchstart', function(e) {
+        if (currentTouch == null) {
+            currentTouch = e.identifier;
+            mouseIsDown = true;
+            lastX = e.pageX - mapBox.offsetLeft;
+            lastY = e.pageY - mapBox.offsetTop;
+        }
+    });
+    mapBox.addEventListener('touchend', function(e) {
+        if (e.identifier == currentTouch) {
+            currentTouch = null;
+            mouseIsDown = false;
+            mouseMoveOrUp(e);
+        }
+    });
+    mapBox.addEventListener('touchmove', function(e) {
+        if (e.identifier == currentTouch) {
+            e.preventDefault();
+            mouseMoveOrUp(e);
+        }
+    });
+    mapBox.addEventListener('touchcancel', function(e) {
+        if (e.identifier == currentTouch) {
+            currentTouch = null;
+            mouseIsDown = false;
+            mouseMoveOrUp(e);
+        }
+    });
+
+
     function refreshMapImage() {
         // Prevents the browser caching the image
         mapImage.src = "/images/south_pole_points.png?date=" + (new Date()).getTime().toString();
