@@ -74,31 +74,60 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     // Prevents being able to drag the image in some browsers (important)
     mapImage.ondragstart = function() { return false; };
 
-    var currentTouch = null;
+    var currentTouchLocations = {};
+    var meanTouch;
+
+    function averageXY() {
+        var x = 0;
+        var y = 0;
+        var ids = Object.keys(currentTouchLocations);
+        for (var i = 0; i < ids.length; i++) {
+            var id = ids[i];
+            x += currentTouchLocations[id].x;
+            y += currentTouchLocations[id].y;
+        }
+        x /= ids.length;
+        y /= ids.length;
+        return { x: x, y: y};
+    }
 
     // Touch handling is reasonably similar to mouse tracking
     mapBox.addEventListener('touchstart', function(e) {
-        if (currentTouch == null) {
-            currentTouch = e.identifier;
-            mouseIsDown = true;
-            lastX = e.pageX - mapBox.offsetLeft;
-            lastY = e.pageY - mapBox.offsetTop;
+        var touches = e.changedTouches;
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            currentTouchLocations[touch.identifier] = { x: touch.pageX - mapBox.offsetLeft, y: touch.pageY - mapBox.offsetTop };
         }
+        meanTouch = averageXY();
     });
+
     var touchEndOrCancel = function(e) {
-        if (e.identifier == currentTouch) {
-            currentTouch = null;
-            mouseIsDown = false;
-            mouseMoveOrUp(e);
+        var touches = e.changedTouches;
+        for (var i = 0; i < touches.length; i++) {
+            delete currentTouchLocations[touches[i].identifier];
+        }
+        if (Object.keys(currentTouchLocations).length > 0) {
+            meanTouch = averageXY();
         }
     };
     mapBox.addEventListener('touchend', touchEndOrCancel);
     mapBox.addEventListener('touchcancel', touchEndOrCancel);
     mapBox.addEventListener('touchmove', function(e) {
-        if (e.identifier == currentTouch) {
-            e.preventDefault();
-            mouseMoveOrUp(e);
+        var touches = e.changedTouches;
+        for (var i = 0; i < touches.length; i++) {
+            var touch = touches[i];
+            currentTouchLocations[touch.identifier] = { x: touch.pageX - mapBox.offsetLeft, y: touch.pageY - mapBox.offsetTop };
         }
+        e.preventDefault();
+        var xy = averageXY();
+        var deltaX = xy.x - meanTouch.x;
+        var deltaY = xy.y - meanTouch.y;
+        // Represent the approximate bounds of Antarctica within the image
+        currentX -= deltaX/currentScale;
+        currentY -= deltaY/currentScale;
+        boundXY();
+        setTransform();
+        meanTouch = xy;
     });
 
 
