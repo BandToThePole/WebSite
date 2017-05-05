@@ -10,9 +10,9 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     var mouseIsDown = false, lastX, lastY;
     console.log(initialX,initialY,initialScale);
     function setTransform() {
-	x=mapBox.offsetWidth/2 - currentX;
-	y=mapBox.offsetHeight/2 - currentY;
-	c = currentScale;
+        x=mapBox.offsetWidth/2 - currentX;
+        y=mapBox.offsetHeight/2 - currentY;
+        c = currentScale;
 
         var transform = "matrix("+c+",0,0,"+c+","+(x + (mapImage.offsetWidth/2-currentX)*(c-1)) +","+(y + (mapImage.offsetHeight/2-currentY)*(c-1))+")";
 
@@ -20,7 +20,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     }
 
     mapImage.onload = function () {
-	boundXY();
+        boundXY();
         setTransform();
         mouseIsDown = false;
     };
@@ -34,8 +34,8 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     });
 
     function boundXY() {
-	currentX = bound(currentX,mapBox.offsetWidth/(2*currentScale),mapImage.offsetWidth -mapBox.offsetWidth/(2*currentScale));
-	currentY = bound(currentY,mapBox.offsetHeight/(2*currentScale),mapImage.offsetHeight -mapBox.offsetHeight/(2*currentScale));
+        currentX = bound(currentX,mapBox.offsetWidth/(2*currentScale),mapImage.offsetWidth -mapBox.offsetWidth/(2*currentScale));
+        currentY = bound(currentY,mapBox.offsetHeight/(2*currentScale),mapImage.offsetHeight -mapBox.offsetHeight/(2*currentScale));
     }
 
     function mouseMoveOrUp(e) {
@@ -46,8 +46,8 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
             var deltaY = y - lastY;
             // Represent the approximate bounds of Antarctica within the image
             currentX -= deltaX/currentScale;
-	    currentY -= deltaY/currentScale;
-	    boundXY();
+            currentY -= deltaY/currentScale;
+            boundXY();
             setTransform();
             lastX = x;
             lastY = y;
@@ -64,7 +64,7 @@ function createMap(mapContainerID, refreshButtonID,initialX,initialY, initialSca
     function scroll(e) {
         currentScale = bound(currentScale * Math.pow(1.1, -e.wheelDelta / 100),0.5,2);
         boundXY();
-	setTransform();
+        setTransform();
         e.preventDefault();
     }
 
