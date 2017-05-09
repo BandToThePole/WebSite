@@ -396,19 +396,20 @@ function postData(req, res) {
 
     db.pool.acquire(function(err,connection) {
         if (err) {
-            //log.push(err);
+            log.push(err);
             res.sendStatus(500);
         }
 
         request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err, rowCount) {
             if (err) {
+		log.push(err);
                 res.sendStatus(500);
             }
             else {
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
 		    connection.release();
 		    if (err) {
-                        console.log(err);
+                        log.push(err);
                         res.sendStatus(500);
                     }
                     else {
