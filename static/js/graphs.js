@@ -40,7 +40,7 @@ function GetMap() {
         map.entities.push(infoboxLayer);
         if (data['locations'].length > 0) {
             var bestview = Microsoft.Maps.LocationRect.fromLocations(locs);
-            map.setView({ center: bestview.center, zoom: 10 });
+            map.setView(bestview);
         }
     })
 }
