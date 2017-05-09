@@ -10,7 +10,9 @@ function GetMap() {
         var pushpinInfos = [];
 
         for (var i = 0; i < data['locations'].length; i++) {
-            pushpinInfos[i] = { 'lat': data['locations'][i].lat, 'lng': data['locations'][i].long, 'title': '', 'description': '' }
+	    if(data['locations'][i].lat > 0){
+		pushpinInfos.push({ 'lat': data['locations'][i].lat, 'lng': data['locations'][i].long, 'title': '', 'description': '' })
+	    }
         }
         var infoboxLayer = new Microsoft.Maps.EntityCollection();
         var pinLayer = new Microsoft.Maps.EntityCollection();
