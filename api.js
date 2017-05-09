@@ -414,7 +414,7 @@ function postData(req, res) {
                     else {
 			resetDailyTables(req.userid,function(err){
 			    if(err){
-				console.log(err);
+				log.push(err);
 				res.sendStatus(500);
 			    }
 			    else{
