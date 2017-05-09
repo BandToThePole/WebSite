@@ -31,5 +31,10 @@ function getLog() {
     return log;
 }
 
+function pushLog(x) {
+    log.push(x);
+}
+
 exports.getLog = getLog;
 exports.pool = pool;
+exports.pushLog = pushLog;

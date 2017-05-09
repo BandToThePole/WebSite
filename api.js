@@ -178,7 +178,7 @@ function data(start,end,user,next){
 function getData(req, res) {
     data(req.query.start,req.query.end,req.query.user,function(err,ret){
 	if(err){
-	    console.log(err);
+	    db.pushLog(err);
 	    res.sendStatus(500);
 	}
 	else {
@@ -202,7 +202,7 @@ function auth(req,res,next) {
 
     db.pool.acquire(function(err,connection) {
         if (err) {
-            //log.push(err);
+            db.pushLog(err);
             res.sendStatus(500);
         }
 
@@ -216,7 +216,7 @@ function auth(req,res,next) {
 		//authentificate
 		crypto.pbkdf2(user.pass, salt, 100000, 256, 'sha256',function(err,key){
 		    if (err){
-			console.log(err);
+			db.pushLog(err);
 		    }
 		    else if(hash == key.toString('hex')){
 			// pass username forward
@@ -281,7 +281,7 @@ function generateMap(data) {
 		}
 		context.drawImage2(pinimg, 0,0,pinimg.width,pinimg.height, pincoordinates[i].x -10, pincoordinates[i].y - 20,pincoordinates[i].x + 10, pincoordinates[i].y);
 	    }
-	    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) console.log(err)});
+	    PImage.encodePNG(canvas,fs.createWriteStream('static/images/south_pole_points.png'), (err) => { if(err) db.pushLog(err)});
 	});
     });
 }
@@ -396,26 +396,26 @@ function postData(req, res) {
 
     db.pool.acquire(function(err,connection) {
         if (err) {
-            log.push(err);
+            db.pushLog(err);
             res.sendStatus(500);
         }
 
         request = new Request("SELECT COALESCE(MAX(sessionid),0) from Sessions", function(err, rowCount) {
             if (err) {
-		log.push(err);
+		db.pushLog(err);
                 res.sendStatus(500);
             }
             else {
                 writeRequest = new Request(sqlQuery, function(err,rowCount) {
 		    connection.release();
 		    if (err) {
-                        log.push(err);
+                        db.pushLog(err);
                         res.sendStatus(500);
                     }
                     else {
 			resetDailyTables(req.userid,function(err){
 			    if(err){
-				log.push(err);
+				db.pushLog(err);
 				res.sendStatus(500);
 			    }
 			    else{
