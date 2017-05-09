@@ -12,7 +12,7 @@
 
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container" style="margin-left:4em;">
+        <div class="container" style="margin-left:4em; width:100%">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
@@ -20,13 +20,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">
+                <a class="navbar-brand" href="/" style="padding-bottom:0px; padding-top:0px; margin-left:3em;">
                     Band to the Pole
+                    <img id="bandPhoto" src="/images/Band.png" />
                 </a>
             </div>
 
             <div id="navbar" class="collapse navbar-collapse">
-                <a href="https://www.microsoft.com/microsoft-band/en-us"><img id="bandPhoto" src="/images/Band1.png" class="hidden-sm" /></a>
+                <!--<a href="https://www.microsoft.com/microsoft-band/en-us"><img id="bandPhoto" src="/images/Band1.png" class="hidden-sm" /></a>-->
 
                 <ul class="nav navbar-nav">
                     <li class="{{#if activeHome}}active{{/if}}"><a href="/">Home</a></li>

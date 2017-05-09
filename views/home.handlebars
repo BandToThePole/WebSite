@@ -19,78 +19,88 @@
         </div>
     </div>
     <hr />
-    <div>
-        <div id="homeTableRow" class="row">
-            <h1 style="width:100%; margin-bottom:2em; margin-top:0px;font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center;">
-                Latest stats
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div id="homeTableRow" class="row">
+                <h1 style="width:100%; margin-bottom:3em; margin-top:0px;font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center;">
+                    Latest stats
 
-                <a href="#"><img id="refresh-link" src="/images/refresh.png" /> </a>
-            </h1>
-            <!-- This is a 3 column layout using Bootstrap
-            http://getbootstrap.com/css/#grid  -->
-            <div class="col-md-1"></div>
-            <div id="home-graphs" class="col-md-4" style="padding-top:0; padding-left:0; padding-right:1em;">
+                    <a href="#"><img id="refresh-link" src="/images/refresh.png" /> </a>
+                </h1>
+                <!-- This is a 3 column layout using Bootstrap
+                http://getbootstrap.com/css/#grid  -->
+
+                <div id="home-graphs" class="col-md-5" style="padding-top:0; padding-left:0; padding-right:1em;">
 
 
-                <div id="map-container" class="map-container">
+                    <div id="map-container" class="map-container">
+                    </div>
+
                 </div>
 
-            </div>
-            
 
-            <div class="col-md-6" style="padding-left:2em;">
-                <div id="graphs-container">
+                <div class="col-md-7">
+                    <div id="graphs-container">
+                    </div>
+
                 </div>
+                <div id="bad-response-container"></div>
 
+
+
+
+                <table>
+                    <!--<tr style="background-color:gray">
+                        <td ></td>
+                        <td ></td>
+
+                    </tr>-->
+                    <tr>
+                        <td>Current UTC Time</td>
+                        <th><strong id="time"></strong></th>
+                    </tr>
+                    <tr>
+                        <td>Distance to South Pole</td>
+                        <td><strong id="distanceleft"></strong></td>
+
+                    </tr>
+                    <tr>
+                        <td>Distance covered yesterday</td>
+                        <td><strong id="distance"></strong></td>
+
+                    </tr>
+                    <tr>
+                        <td>Calories burnt yesterday</td>
+                        <td><strong id="calories"></strong></td>
+
+                    </tr>
+                    <tr>
+                        <td>Average Heart Rate</td>
+                        <td><strong id="heartrate"></strong></td>
+
+                    </tr>
+                </table>
             </div>
-            <div id="bad-response-container"></div>
-
-
-
-
-            <table>
-                <!--<tr style="background-color:gray">
-                    <td ></td>
-                    <td ></td>
-
-                </tr>-->
-                <tr>
-                    <td>Current UTC Time</td>
-                    <th><strong id="time"></strong></th>
-                </tr>
-                <tr>
-                    <td>Distance to South Pole</td>
-                    <td><strong id="distanceleft"></strong></td>
-
-                </tr>
-                <tr>
-                    <td>Distance covered yesterday</td>
-                    <td><strong id="distance"></strong></td>
-
-                </tr>
-                <tr>
-                    <td>Calories burnt yesterday</td>
-                    <td><strong id="calories"></strong></td>
-
-                </tr>
-                <tr>
-                    <td>Average Heart Rate</td>
-                    <td><strong id="heartrate"></strong></td>
-
-                </tr>
-            </table>
         </div>
+        <div class="col-md-1"></div>
 
 
     </div>
     <hr />
 
 
-    <div class="row" style="margin-left:2em; margin-right:2em;">
-        <h1 style="font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center; margin-bottom:2em; margin-top:0;">Latest tweets</h1>
-        <a class="twitter-timeline" data-height="500" href="https://twitter.com/jredden">
-            Tweets by jredden
-        </a>
+
+    <div id="twitterContainer" class="row">
+        <h1 style="font-family:Verdana, Geneva, Tahoma, sans-serif ;text-align:center; ">Latest tweets</h1>
+        <div class="col-md-1"></div>
+        <div id="lmao" class=" col-md-10">
+
+            <a class="twitter-timeline" data-width="1200" data-height="700" href="https://twitter.com/jredden">
+                Tweets by jredden
+            </a>
+        </div>
+        <div class="col-md-1"></div>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
     </div>
     <script src="/js/graphfunc.js"></script>

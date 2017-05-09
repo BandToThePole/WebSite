@@ -33,18 +33,21 @@ footer {
     margin: auto;
     padding-bottom: 50px;
 }
+
 @media (max-width: 980px) {
     #bandPhoto {
         display: none;
+        visibility: hidden;
     }
 
     #portrait {
         width: 200px !important;
         height: 200px !important;
     }
+
     #map {
-        max-height:300px;
-        max-width:300px;
+        max-height: 300px;
+        max-width: 300px;
     }
 }
 
@@ -68,6 +71,7 @@ footer {
     width: 250px;
     float: right;
 }
+
 .map-container {
     max-width: 500px;
 }
@@ -103,8 +107,14 @@ a {
     transition: all 0.35s;
 }
 
-.navbar-nav {
-    float: right;
+.navbar .navbar-nav {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+    text-align: center;
 }
 
 #navbar {
@@ -136,7 +146,7 @@ a {
 }
 
 .navbar-inverse {
-    background: gray none repeat scroll 0 0 !important;
+    background: black none repeat scroll 0 0 !important;
     border: solid none !important;
     border-color: #656565;
     border-radius: 0px !important;
@@ -145,16 +155,18 @@ a {
 .navbar-brand {
     font-size: 24px;
     color: white !important;
+    display: block;
 }
 
     .navbar-brand:hover {
         color: black !important;
+        background-color: #b1b1b1 !important;
     }
 
 
 #bandPhoto {
     height: 50px;
-    padding-left: 200px;
+    display: inline
 }
 
 
@@ -240,4 +252,16 @@ hr {
 #refresh-link {
     height: 30px;
     width: 30px;
+}
+
+h2 {
+    text-align: center;
+}
+
+#lmao {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 2em;
 }
